@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Shield } from "lucide-react";
+import Image from "next/image";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -38,9 +38,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           className="mb-8 flex flex-col items-center"
         >
           <Link href="/" className="flex items-center gap-2.5 mb-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary shadow-lg">
-              <Shield className="h-5 w-5 text-white" />
-            </div>
+            <Image src="/logo.png" alt="TrustPay" width={40} height={40} className="rounded-xl shadow-lg" />
             <span className="text-xl font-bold tracking-tight">TrustPay</span>
           </Link>
           <p className="text-sm text-muted-foreground">Secure escrow for social commerce</p>

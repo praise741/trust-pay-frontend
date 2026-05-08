@@ -3,7 +3,8 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, ChevronLeft, LogOut } from "lucide-react";
+import Image from "next/image";
+import { ChevronLeft, LogOut } from "lucide-react";
 import * as Icons from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/app-store";
@@ -36,9 +37,7 @@ export function Sidebar() {
       >
         {/* Logo */}
         <div className={cn("flex items-center h-16 px-4 border-b border-border", sidebarCollapsed ? "justify-center" : "gap-2.5")}>
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl gradient-primary">
-            <Shield className="h-4.5 w-4.5 text-white" />
-          </div>
+          <Image src="/logo.png" alt="TrustPay" width={36} height={36} className="rounded-xl shrink-0" />
           <AnimatePresence>
             {!sidebarCollapsed && (
               <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: "auto" }} exit={{ opacity: 0, width: 0 }} className="text-lg font-bold tracking-tight whitespace-nowrap overflow-hidden">

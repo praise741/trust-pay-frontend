@@ -5,34 +5,40 @@ import type { Transaction, User, Dispute, Notification, Shipment, Wallet, KYCApp
 // ============================================
 export const API_ENDPOINTS = {
   auth: {
-    login: "/api/auth/login",
-    register: "/api/auth/register",
-    verifyEmail: "/api/auth/verify-email",
-    sendOtp: "/api/auth/send-otp",
-    verifyOtp: "/api/auth/verify-otp",
-    resetPassword: "/api/auth/reset-password",
+    login: "/api/auth/login/",
+    register: "/api/auth/register/",
+    refresh: "/api/auth/refresh/",
+    google: "/api/auth/google/",
+    verifyEmail: "/api/auth/verify-email/",
   },
-  kyc: {
-    uploadId: "/api/kyc/upload-id",
-    uploadSelfie: "/api/kyc/upload-selfie",
-    verify: "/api/kyc/verify",
+  merchant: {
+    dashboard: "/api/merchant/dashboard/",
+    deals: "/api/merchant/deals/",
+    dealDetail: (slug: string) => `/api/merchant/deals/${slug}/`,
+    transactions: "/api/merchant/transactions/",
+    links: "/api/merchant/links/",
+    profile: "/api/merchant/profile/",
   },
-  payments: {
-    createVirtualAccount: "/api/payments/create-virtual-account",
-    verify: "/api/payments/verify",
-    payout: "/api/payments/payout",
-    refund: "/api/payments/refund",
+  buyer: {
+    deals: "/api/buyer/deals/",
+    dealDetail: (slug: string) => `/api/buyer/deals/${slug}/`,
   },
-  transactions: {
-    list: "/api/transactions",
-    create: "/api/transactions/create",
-    get: (id: string) => `/api/transactions/${id}`,
-    release: (id: string) => `/api/transactions/${id}/release`,
+  deals: {
+    list: "/api/deals/",
+    create: "/api/deals/",
+    detail: (slug: string) => `/api/deals/${slug}/`,
+    pay: (slug: string) => `/api/deals/${slug}/pay/`,
+    ship: (slug: string) => `/api/deals/${slug}/ship/`,
+    confirm: (slug: string) => `/api/deals/${slug}/confirm/`,
+    dispute: (slug: string) => `/api/deals/${slug}/dispute/`,
+    uploadImages: (slug: string) => `/api/deals/${slug}/images/`,
   },
-  disputes: {
-    list: "/api/disputes",
-    create: "/api/disputes/create",
-    get: (id: string) => `/api/disputes/${id}`,
+  sellers: {
+    publicProfile: (username: string) => `/api/sellers/${username}/`,
+  },
+  admin: {
+    disputes: "/api/admin/disputes/",
+    resolveDispute: (id: string) => `/api/admin/disputes/${id}/resolve/`,
   },
 } as const;
 

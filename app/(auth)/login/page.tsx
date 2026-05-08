@@ -95,6 +95,22 @@ export default function LoginPage() {
         Don&apos;t have an account?{" "}
         <Link href="/signup" className="text-primary font-medium hover:underline">Sign up</Link>
       </p>
+
+      {/* Admin test bypass */}
+      <div className="mt-2 p-3 rounded-xl bg-accent/50 border border-dashed border-border">
+        <p className="text-[10px] text-muted-foreground text-center mb-2">🔧 Quick Test Access</p>
+        <div className="grid grid-cols-3 gap-2">
+          {(["buyer", "seller", "admin"] as const).map((r) => (
+            <Button key={r} variant="outline" size="sm" className="text-xs capitalize" onClick={() => {
+              const { adminBypass } = useAuthStore.getState();
+              adminBypass(r);
+              toast.success(`Logged in as ${r}`);
+              router.push(`/${r}/dashboard`);
+            }}>{r === "buyer" ? "🛒" : r === "seller" ? "🏪" : "⚙️"} {r}</Button>
+          ))}
+        </div>
+        <p className="text-[9px] text-muted-foreground text-center mt-1.5">Or use password: <code className="bg-muted px-1 rounded">trustpay2026</code></p>
+      </div>
     </div>
   );
 }

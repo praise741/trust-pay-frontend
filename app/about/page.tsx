@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Shield, Users, Target, Heart, ArrowRight, CheckCircle, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,7 +31,7 @@ export default function AboutPage() {
       <nav className="sticky top-0 z-50 glass-strong border-b border-border/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl gradient-primary"><Shield className="h-4 w-4 text-white" /></div>
+            <Image src="/logo.png" alt="TrustPay" width={32} height={32} className="rounded-xl" />
             <span className="text-lg font-bold">TrustPay</span>
           </Link>
           <div className="flex items-center gap-3"><ThemeToggle /><Link href="/login"><Button variant="ghost" size="sm">Sign In</Button></Link><Link href="/signup"><Button size="sm">Get Started</Button></Link></div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Shield, ArrowRight, CheckCircle, Lock, Truck, ShieldCheck, Star, Smartphone, Globe, Zap, ChevronLeft, ChevronRight, Quote, Mail, MapPin, Phone, Instagram, MessageCircle, Users, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -74,9 +75,7 @@ export default function HomePage() {
         <div className={`max-w-7xl mx-auto px-4 sm:px-6 ${scrolled ? "mx-4 sm:mx-6 lg:mx-auto" : ""}`}>
           <div className={`flex items-center justify-between h-14 px-5 rounded-2xl transition-all duration-500 ${scrolled ? "glass-strong shadow-xl" : "bg-transparent"}`}>
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl gradient-primary shadow-lg">
-                <Shield className="h-4 w-4 text-white" />
-              </div>
+              <Image src="/logo.png" alt="TrustPay" width={32} height={32} className="rounded-xl shadow-lg" />
               <span className="text-lg font-bold tracking-tight">TrustPay</span>
             </Link>
             <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
@@ -127,73 +126,9 @@ export default function HomePage() {
               </motion.div>
             </div>
 
-            {/* Right — Animated Escrow Flow Visual */}
+            {/* Right — Animated Multi-User Escrow Flow */}
             <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="hidden lg:block">
-              <div className="relative">
-                {/* Main card */}
-                <div className="glass-strong rounded-3xl p-8 shadow-2xl border border-primary/10">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="h-3 w-3 rounded-full bg-red-400" />
-                    <div className="h-3 w-3 rounded-full bg-amber-400" />
-                    <div className="h-3 w-3 rounded-full bg-green-400" />
-                    <span className="ml-2 text-xs text-muted-foreground font-mono">trustpay.ng/escrow</span>
-                  </div>
-
-                  {/* Escrow visualization */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 rounded-2xl bg-accent/50">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500 font-bold text-sm">AO</div>
-                        <div><p className="text-sm font-semibold">Adaeze O.</p><p className="text-[10px] text-muted-foreground">Buyer · Lagos</p></div>
-                      </div>
-                      <div className="text-right"><p className="text-xs text-muted-foreground">Sent</p><p className="text-sm font-bold text-primary">₦85,000</p></div>
-                    </div>
-
-                    {/* Animated escrow lock */}
-                    <div className="flex flex-col items-center py-3">
-                      <motion.div animate={{ scale: [1, 1.08, 1], boxShadow: ["0 0 0 0 rgba(59,130,246,0)", "0 0 0 12px rgba(59,130,246,0.1)", "0 0 0 0 rgba(59,130,246,0)"] }} transition={{ duration: 2.5, repeat: Infinity }} className="h-14 w-14 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
-                        <Lock className="h-6 w-6 text-white" />
-                      </motion.div>
-                      <p className="text-xs font-semibold mt-2 text-primary">Escrow Vault</p>
-                      <p className="text-[10px] text-muted-foreground">Funds secured · 1.5% trust fee</p>
-                    </div>
-
-                    <div className="flex items-center justify-between p-4 rounded-2xl bg-accent/50">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500 font-bold text-sm">CE</div>
-                        <div><p className="text-sm font-semibold">Chukwuma E.</p><p className="text-[10px] text-muted-foreground">Seller · Abuja</p></div>
-                      </div>
-                      <div className="text-right"><p className="text-xs text-muted-foreground">Receives</p><p className="text-sm font-bold text-success">₦83,725</p></div>
-                    </div>
-                  </div>
-
-                  {/* Status bar */}
-                  <div className="mt-4 flex items-center gap-2">
-                    {["Payment Secured", "Shipped", "In Transit", "Delivered"].map((s, i) => (
-                      <div key={s} className="flex-1">
-                        <div className={`h-1.5 rounded-full ${i < 3 ? "bg-primary" : "bg-muted"}`} />
-                        <p className={`text-[9px] mt-1 ${i < 3 ? "text-primary font-medium" : "text-muted-foreground"}`}>{s}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Floating notification */}
-                <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -right-4 glass-strong rounded-xl px-4 py-2.5 shadow-xl border border-green-500/20">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <div><p className="text-xs font-semibold">Delivery Confirmed</p><p className="text-[10px] text-muted-foreground">2 min ago</p></div>
-                  </div>
-                </motion.div>
-
-                {/* Platform badges */}
-                <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute -bottom-3 -left-4 glass-strong rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
-                  <Instagram className="h-4 w-4 text-pink-500" />
-                  <MessageCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm font-bold">𝕏</span>
-                  <span className="text-[10px] text-muted-foreground">Social Commerce</span>
-                </motion.div>
-              </div>
+              <HeroEscrowVisual />
             </motion.div>
           </div>
         </div>
@@ -328,7 +263,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center gap-2 mb-4"><div className="h-8 w-8 rounded-lg gradient-primary flex items-center justify-center"><Shield className="h-4 w-4 text-white" /></div><span className="font-bold text-lg">TrustPay</span></div>
+              <div className="flex items-center gap-2 mb-4"><Image src="/logo.png" alt="TrustPay" width={32} height={32} className="rounded-lg" /><span className="font-bold text-lg">TrustPay</span></div>
               <p className="text-sm text-muted-foreground">Trust infrastructure for African social commerce.</p>
             </div>
             <div>
@@ -362,6 +297,115 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+/* ========================================
+   HERO ESCROW VISUAL — Multi-user cycling
+   ======================================== */
+const ESCROW_DEALS = [
+  { buyer: { initials: "AO", name: "Adaeze O.", city: "Lagos", color: "bg-blue-500/20 text-blue-500" }, seller: { initials: "CE", name: "Chukwuma E.", city: "Abuja", color: "bg-emerald-500/20 text-emerald-500" }, amount: 85000, fee: 1.5, platform: "Instagram", step: 3 },
+  { buyer: { initials: "TB", name: "Tunde B.", city: "PH", color: "bg-violet-500/20 text-violet-500" }, seller: { initials: "FA", name: "Folake A.", city: "Ibadan", color: "bg-rose-500/20 text-rose-500" }, amount: 450000, fee: 1.5, platform: "WhatsApp", step: 2 },
+  { buyer: { initials: "EN", name: "Emeka N.", city: "Enugu", color: "bg-cyan-500/20 text-cyan-500" }, seller: { initials: "AM", name: "Aisha M.", city: "Kano", color: "bg-amber-500/20 text-amber-500" }, amount: 25000, fee: 2.0, platform: "TikTok", step: 4 },
+  { buyer: { initials: "FB", name: "Fatima B.", city: "Abuja", color: "bg-pink-500/20 text-pink-500" }, seller: { initials: "KO", name: "Kunle O.", city: "Lagos", color: "bg-teal-500/20 text-teal-500" }, amount: 1200000, fee: 1.5, platform: "X", step: 1 },
+];
+
+function HeroEscrowVisual() {
+  const [currentDeal, setCurrentDeal] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentDeal((p) => (p + 1) % ESCROW_DEALS.length), 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const deal = ESCROW_DEALS[currentDeal];
+  const receives = deal.amount - (deal.amount * deal.fee / 100);
+  const formatN = (n: number) => n >= 1000000 ? `₦${(n / 1000000).toFixed(1)}M` : `₦${n.toLocaleString()}`;
+
+  return (
+    <div className="relative">
+      {/* Main card */}
+      <div className="glass-strong rounded-3xl p-7 shadow-2xl border border-primary/10">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="h-3 w-3 rounded-full bg-red-400" />
+          <div className="h-3 w-3 rounded-full bg-amber-400" />
+          <div className="h-3 w-3 rounded-full bg-green-400" />
+          <span className="ml-2 text-xs text-muted-foreground font-mono">trustpay.ng/escrow</span>
+          <span className="ml-auto text-[10px] text-primary font-medium">LIVE</span>
+          <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div key={currentDeal} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.4 }} className="space-y-3">
+            {/* Buyer */}
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-accent/50">
+              <div className="flex items-center gap-3">
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm ${deal.buyer.color}`}>{deal.buyer.initials}</div>
+                <div><p className="text-sm font-semibold">{deal.buyer.name}</p><p className="text-[10px] text-muted-foreground">Buyer · {deal.buyer.city}</p></div>
+              </div>
+              <div className="text-right"><p className="text-xs text-muted-foreground">Sent</p><p className="text-sm font-bold text-primary">{formatN(deal.amount)}</p></div>
+            </div>
+
+            {/* Vault */}
+            <div className="flex flex-col items-center py-2">
+              <motion.div animate={{ scale: [1, 1.08, 1], boxShadow: ["0 0 0 0 rgba(59,130,246,0)", "0 0 0 12px rgba(59,130,246,0.1)", "0 0 0 0 rgba(59,130,246,0)"] }} transition={{ duration: 2.5, repeat: Infinity }} className="h-12 w-12 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
+                <Lock className="h-5 w-5 text-white" />
+              </motion.div>
+              <p className="text-xs font-semibold mt-1.5 text-primary">Escrow Vault</p>
+              <p className="text-[10px] text-muted-foreground">Funds secured · {deal.fee}% trust fee</p>
+            </div>
+
+            {/* Seller */}
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-accent/50">
+              <div className="flex items-center gap-3">
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm ${deal.seller.color}`}>{deal.seller.initials}</div>
+                <div><p className="text-sm font-semibold">{deal.seller.name}</p><p className="text-[10px] text-muted-foreground">Seller · {deal.seller.city}</p></div>
+              </div>
+              <div className="text-right"><p className="text-xs text-muted-foreground">Receives</p><p className="text-sm font-bold text-success">{formatN(receives)}</p></div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Progress */}
+        <div className="mt-4 flex items-center gap-2">
+          {["Secured", "Shipped", "In Transit", "Delivered"].map((s, i) => (
+            <div key={s} className="flex-1">
+              <div className={`h-1.5 rounded-full transition-all duration-500 ${i < deal.step ? "bg-primary" : "bg-muted"}`} />
+              <p className={`text-[9px] mt-1 transition-colors ${i < deal.step ? "text-primary font-medium" : "text-muted-foreground"}`}>{s}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Deal indicators */}
+        <div className="flex items-center justify-center gap-1.5 mt-3">
+          {ESCROW_DEALS.map((_, i) => (
+            <button key={i} onClick={() => setCurrentDeal(i)} className={`h-1.5 rounded-full transition-all ${i === currentDeal ? "w-5 bg-primary" : "w-1.5 bg-muted-foreground/30"}`} />
+          ))}
+        </div>
+      </div>
+
+      {/* Floating notification */}
+      <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -right-4 glass-strong rounded-xl px-4 py-2.5 shadow-xl border border-green-500/20">
+        <div className="flex items-center gap-2">
+          <CheckCircle className="h-4 w-4 text-green-500" />
+          <div><p className="text-xs font-semibold">Delivery Confirmed</p><p className="text-[10px] text-muted-foreground">2 min ago</p></div>
+        </div>
+      </motion.div>
+
+      {/* Platform badge */}
+      <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute -bottom-3 -left-4 glass-strong rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
+        <Instagram className="h-4 w-4 text-pink-500" />
+        <MessageCircle className="h-4 w-4 text-green-500" />
+        <span className="text-sm font-bold">𝕏</span>
+        <span className="text-[10px] text-muted-foreground">Social Commerce</span>
+      </motion.div>
+
+      {/* Transaction counter */}
+      <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }} className="absolute top-6 -left-6 glass-strong rounded-xl px-3 py-2 shadow-xl">
+        <p className="text-[10px] text-muted-foreground">Secured today</p>
+        <p className="text-sm font-bold text-primary">₦14.2M</p>
+      </motion.div>
     </div>
   );
 }
