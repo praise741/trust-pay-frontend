@@ -20,8 +20,8 @@ export const API_ENDPOINTS = {
     profile: "/api/merchant/profile/",
   },
   buyer: {
-    deals: "/api/buyer/deals/",
-    dealDetail: (slug: string) => `/api/buyer/deals/${slug}/`,
+    deals: "/api/deals/",
+    dealDetail: (slug: string) => `/api/deals/${slug}/`,
   },
   deals: {
     list: "/api/deals/",

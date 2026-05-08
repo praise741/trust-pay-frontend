@@ -12,7 +12,6 @@ import { buyerService } from "@/services/api";
 import { useAuthStore } from "@/store/auth-store";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import Link from "next/link";
-import { toast } from "sonner";
 import type { BackendDeal } from "@/types";
 
 const stagger = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } };
@@ -28,9 +27,7 @@ export default function BuyerDashboardPage() {
       try {
         const { data } = await buyerService.deals();
         setDeals(data || []);
-      } catch (error) {
-        console.error("Failed to fetch deals", error);
-        toast.error("Could not load deals");
+      } catch {
         setDeals([]);
       } finally {
         setLoading(false);
@@ -54,17 +51,16 @@ export default function BuyerDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Dashboard" description={`Welcome back, ${user?.firstName || "Buyer"} 👋`} />
+      <PageHeader title="Dashboard" description={`Welcome back, ${user?.firstName || "Buyer"}`} />
 
       <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <motion.div variants={item}><KPICard title="Active Deals" value={String(activeDeals.length)} change={`+${deals.length} total`} changeType="positive" icon={ArrowLeftRight} /></motion.div>
-        <motion.div variants={item}><KPICard title="Pending Deliveries" value={String(deals.filter((d) => d.status === "SHIPPED").length)} change="Awaiting confirmation" changeType="neutral" icon={Truck} delay={0.1} /></motion.div>
-        <motion.div variants={item}><KPICard title="Trust Score" value={`${user?.trustScore || 85}/100`} change="+2 pts" changeType="positive" icon={ShieldCheck} delay={0.2} /></motion.div>
-        <motion.div variants={item}><KPICard title="Total Spent" value={formatCurrency(totalSpent)} change={`${completedDeals.length} completed`} changeType="positive" icon={Wallet} delay={0.3} /></motion.div>
+        <motion.div variants={item}><KPICard title="Active Deals" value={String(activeDeals.length)} icon={ArrowLeftRight} /></motion.div>
+        <motion.div variants={item}><KPICard title="Pending Delivery" value={String(deals.filter((d) => d.status === "SHIPPED").length)} icon={Truck} delay={0.1} /></motion.div>
+        <motion.div variants={item}><KPICard title="Trust Score" value={`${user?.trustScore || 85}/100`} icon={ShieldCheck} delay={0.2} /></motion.div>
+        <motion.div variants={item}><KPICard title="Total Spent" value={formatCurrency(totalSpent)} icon={Wallet} delay={0.3} /></motion.div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Transactions */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle className="text-base">Recent Transactions</CardTitle>
@@ -72,15 +68,15 @@ export default function BuyerDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {deals.length > 0 ? deals.slice(0, 5).map((deal, i) => (
-                <motion.div key={deal.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 * i }}>
-                  <Link href={`/buyer/transactions/${deal.slug}`} className="flex items-center justify-between p-3 rounded-xl hover:bg-accent/50 transition-colors group">
+              {deals.length > 0 ? deals.slice(0, 5).map((deal) => (
+                <motion.div key={deal.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
+                  <Link href={`/buyer/transactions/${deal.slug}`} className="flex items-center justify-between p-3 rounded-xl hover:bg-accent/50 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
                         <ArrowLeftRight className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium group-hover:text-primary transition-colors">{deal.item_description}</p>
+                        <p className="text-sm font-medium">{deal.item_description}</p>
                         <p className="text-xs text-muted-foreground">{formatDate(deal.created_at)}</p>
                       </div>
                     </div>
@@ -99,16 +95,11 @@ export default function BuyerDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Escrow Vault */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Escrow Vault</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-base">Escrow Vault</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="text-center p-6 rounded-2xl bg-gradient-to-br from-primary/5 to-sage/5 border border-primary/10">
-              <motion.div animate={{ scale: [1, 1.02, 1] }} transition={{ duration: 2, repeat: Infinity }}>
-                <ShieldCheck className="h-10 w-10 text-primary mx-auto mb-2" />
-              </motion.div>
+              <ShieldCheck className="h-10 w-10 text-primary mx-auto mb-2" />
               <p className="text-2xl font-bold">{formatCurrency(activeEscrow)}</p>
               <p className="text-xs text-muted-foreground mt-1">Locked in escrow</p>
             </div>
