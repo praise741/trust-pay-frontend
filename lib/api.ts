@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useAuthStore } from "@/store/auth-store";
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://trust-pay-backend-v78l.onrender.com/").replace(/\/+$/, "");
 
@@ -38,8 +39,10 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // If 401 and we haven't retried yet, try refreshing
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Skip retry for auth endpoints (no point refreshing a failed login)
+    const isAuthRequest = originalRequest.url?.includes("/api/auth/");
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest) {
       originalRequest._retry = true;
 
       try {
@@ -47,14 +50,12 @@ api.interceptors.response.use(
         if (stored) {
           const { state } = JSON.parse(stored);
           if (state?.refreshToken) {
-            // Use a fresh axios instance without interceptors to avoid infinite loops
             const refreshClient = axios.create({
               baseURL: API_BASE_URL,
               timeout: 10000,
               headers: { "Content-Type": "application/json" },
             });
             const { data } = await refreshClient.post("/api/auth/refresh/", { refresh: state.refreshToken });
-            // Update stored token
             const newState = { ...state, token: data.access };
             localStorage.setItem("trustpay-auth", JSON.stringify({ state: newState }));
             originalRequest.headers.Authorization = `Bearer ${data.access}`;
@@ -62,10 +63,11 @@ api.interceptors.response.use(
           }
         }
       } catch {
-        // Refresh failed — clear auth and redirect to login
-        localStorage.removeItem("trustpay-auth");
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
+        // Refresh failed — clear auth state
+        try {
+          useAuthStore.getState().logout();
+        } catch {
+          localStorage.removeItem("trustpay-auth");
         }
       }
     }
