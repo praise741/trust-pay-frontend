@@ -18,6 +18,9 @@ interface VaDetails {
   va_account_number: string;
   va_bank_name: string;
   amount: string;
+  trust_fee_percent: string;
+  trust_fee_amount: string;
+  seller_receives: string;
 }
 
 export default function PaymentPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -131,8 +134,8 @@ export default function PaymentPage({ params }: { params: Promise<{ slug: string
                 <span className="font-medium">{deal.delivery_days} days</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Trust Fee</span>
-                <span className="font-medium">{deal.trust_fee_percent}%</span>
+                <span className="text-muted-foreground">TrustPay Security Fee</span>
+                <span className="font-medium text-amber-600">{deal.trust_fee_percent}%</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Created</span>
@@ -192,9 +195,23 @@ export default function PaymentPage({ params }: { params: Promise<{ slug: string
                       </button>
                     </div>
                   </div>
-                  <div className="p-3 rounded-xl bg-muted">
-                    <p className="text-xs text-muted-foreground mb-1">Amount</p>
-                    <p className="text-lg font-bold">{formatCurrency(parseFloat(vaDetails.amount))}</p>
+                  {/* Fee breakdown for buyer */}
+                  <div className="p-3 rounded-xl border border-primary/20 bg-primary/5 space-y-2">
+                    <p className="text-xs font-semibold text-primary uppercase tracking-wide">Payment Breakdown</p>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">You Pay</span>
+                      <span className="font-semibold">{formatCurrency(parseFloat(vaDetails.amount))}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">TrustPay Security Fee (1.5%)</span>
+                      <span className="text-amber-600 font-medium">₦{parseFloat(vaDetails.trust_fee_amount).toLocaleString("en-NG", { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="h-px bg-border" />
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Seller Receives</span>
+                      <span className="font-medium text-green-600">₦{parseFloat(vaDetails.seller_receives).toLocaleString("en-NG", { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">The security fee protects your transaction and is kept in escrow until delivery is confirmed.</p>
                   </div>
                 </div>
 

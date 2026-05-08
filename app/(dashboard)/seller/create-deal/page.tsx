@@ -201,7 +201,6 @@ export default function CreateDealPage() {
               <div className="p-4 rounded-xl bg-accent/50 space-y-2">
                 {[
                   ["Product", title],
-                  ["Amount", `₦${parseFloat(amount || "0").toLocaleString()}`],
                   ["Delivery", `${deliveryDays} days`],
                   ["Platform", platform.charAt(0).toUpperCase() + platform.slice(1)],
                   ...(buyerEmail ? [["Buyer Email", buyerEmail]] : []),
@@ -212,6 +211,28 @@ export default function CreateDealPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Fee Breakdown */}
+              {amount && parseFloat(amount) > 0 && (
+                <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 space-y-2">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wide mb-3">Fee Breakdown</p>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Deal Amount</span>
+                    <span className="font-medium">₦{parseFloat(amount).toLocaleString("en-NG", { minimumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">TrustPay Security Fee (1.5%)</span>
+                    <span className="font-medium text-amber-600">- ₦{(parseFloat(amount) * 0.015).toLocaleString("en-NG", { minimumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="h-px bg-border my-1" />
+                  <div className="flex justify-between text-sm font-semibold">
+                    <span>You Receive</span>
+                    <span className="text-green-600">₦{(parseFloat(amount) * 0.985).toLocaleString("en-NG", { minimumFractionDigits: 2 })}</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-2">The buyer pays ₦{parseFloat(amount).toLocaleString("en-NG", { minimumFractionDigits: 2 })} and TrustPay retains 1.5% to secure the escrow.</p>
+                </div>
+              )}
+
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setStep(2)}>
                   Back
@@ -223,6 +244,7 @@ export default function CreateDealPage() {
               </div>
             </motion.div>
           )}
+
         </CardContent>
       </Card>
     </div>
