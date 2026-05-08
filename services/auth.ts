@@ -2,21 +2,18 @@ import api from "@/lib/api";
 import { API_ENDPOINTS } from "@/constants";
 
 export const authService = {
-  login: (email: string, password: string) =>
-    api.post(API_ENDPOINTS.auth.login, { email, password }),
+  login: (username: string, password: string) =>
+    api.post(API_ENDPOINTS.auth.login, { username, password }),
 
-  register: (data: { firstName: string; lastName: string; email: string; password: string; role: string }) =>
+  register: (data: { username: string; email?: string; password: string; phone?: string; bank_name?: string; bank_account_number?: string; bank_code?: string; is_merchant?: boolean }) =>
     api.post(API_ENDPOINTS.auth.register, data),
 
-  verifyEmail: (token: string) =>
-    api.post(API_ENDPOINTS.auth.verifyEmail, { token }),
+  refresh: (refreshToken: string) =>
+    api.post(API_ENDPOINTS.auth.refresh, { refresh: refreshToken }),
 
-  sendOtp: (email: string) =>
-    api.post(API_ENDPOINTS.auth.sendOtp, { email }),
+  googleLogin: (token: string) =>
+    api.post(API_ENDPOINTS.auth.google, { token }),
 
-  verifyOtp: (email: string, otp: string) =>
-    api.post(API_ENDPOINTS.auth.verifyOtp, { email, otp }),
-
-  resetPassword: (token: string, password: string) =>
-    api.post(API_ENDPOINTS.auth.resetPassword, { token, password }),
+  verifyEmail: () =>
+    api.get(API_ENDPOINTS.auth.verifyEmail),
 };
