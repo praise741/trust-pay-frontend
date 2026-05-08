@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -11,7 +11,30 @@ import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/store/auth-store";
 import { getErrorMessage } from "@/lib/error-handler";
 import { toast } from "sonner";
-import { useGoogleLogin } from "@react-oauth/google";
+
+// Declare google global type
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: {
+            client_id: string;
+            callback: (response: { credential: string }) => void;
+          }) => void;
+          renderButton: (
+            element: HTMLElement,
+            options: {
+              theme?: string;
+              size?: string;
+              width?: number;
+            }
+          ) => void;
+        };
+      };
+    };
+  }
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -21,23 +44,51 @@ export default function LoginPage() {
   const { login, googleLogin } = useAuthStore();
   const router = useRouter();
 
-  const handleGoogleAuth = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      setIsLoading(true);
-      try {
-        const googleIdToken = (tokenResponse as unknown as Record<string, string>).credential || tokenResponse.access_token;
-        await googleLogin(googleIdToken);
-        toast.success("Welcome back!");
-        const state = useAuthStore.getState();
-        router.push(`/${state.role}/dashboard`);
-      } catch {
-        toast.error("Google login failed. Please try again.");
-      } finally {
-        setIsLoading(false);
+  useEffect(() => {
+    // Load Google Sign-In script
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
+          callback: handleGoogleCallback,
+        });
+
+        const buttonDiv = document.getElementById("googleSignInButton");
+        if (buttonDiv) {
+          window.google.accounts.id.renderButton(buttonDiv, {
+            theme: "outline",
+            size: "large",
+            width: buttonDiv.offsetWidth,
+          });
+        }
       }
-    },
-    onError: () => toast.error("Google login cancelled or failed."),
-  });
+    };
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleGoogleCallback = async (response: { credential: string }) => {
+    setIsLoading(true);
+    try {
+      await googleLogin(response.credential);
+      toast.success("Welcome back!");
+      const state = useAuthStore.getState();
+      router.push(`/${state.role}/dashboard`);
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("Google login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,9 +142,7 @@ export default function LoginPage() {
         <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">or continue with</span>
       </div>
 
-      <Button variant="outline" className="w-full h-11" onClick={() => handleGoogleAuth()}>
-        <span className="text-base font-bold mr-2">G</span> Google
-      </Button>
+      <div id="googleSignInButton" className="w-full flex justify-center"></div>
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
