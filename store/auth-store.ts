@@ -77,15 +77,16 @@ export const useAuthStore = create<AuthState>()(
       register: async (data) => {
         set({ isLoading: true });
         try {
-          const res = await authService.register({
+          await authService.register({
             username: data.username,
             email: data.email,
             password: data.password,
             phone: data.phone,
             is_merchant: data.role === "seller",
           });
-          // Auto-login after registration
+          // Auto-login after registration to get the correct role from backend
           await get().login(data.username, data.password);
+          // Role is now set correctly by login function
         } catch (error) {
           set({ isLoading: false });
           throw error;

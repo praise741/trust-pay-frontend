@@ -102,7 +102,9 @@ export default function SignupPage() {
     try {
       await register({ ...form, role });
       toast.success("Account created successfully!");
-      router.push(`/${role}/dashboard`);
+      // Get the actual role from auth store after login completes
+      const state = useAuthStore.getState();
+      router.push(`/${state.role}/dashboard`);
     } catch (error) { toast.error(getErrorMessage(error, "Registration failed")); } finally { setIsLoading(false); }
   };
 
