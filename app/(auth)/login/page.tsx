@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/store/auth-store";
+import { getErrorMessage } from "@/lib/error-handler";
 import { toast } from "sonner";
 import { useGoogleLogin } from "@react-oauth/google";
 
@@ -46,7 +47,7 @@ export default function LoginPage() {
       toast.success("Welcome back!");
       const state = useAuthStore.getState();
       router.push(`/${state.role}/dashboard`);
-    } catch { toast.error("Invalid credentials"); } finally { setIsLoading(false); }
+    } catch (error) { toast.error(getErrorMessage(error, "Invalid credentials")); } finally { setIsLoading(false); }
   };
 
   return (

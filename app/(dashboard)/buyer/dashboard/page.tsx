@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { DEAL_STATUS_CONFIG } from "@/constants";
 import { buyerService } from "@/services/api";
 import { useAuthStore } from "@/store/auth-store";
+import { getErrorMessage } from "@/lib/error-handler";
+import { toast } from "sonner";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import Link from "next/link";
 import type { BackendDeal } from "@/types";
@@ -27,7 +29,9 @@ export default function BuyerDashboardPage() {
       try {
         const { data } = await buyerService.deals();
         setDeals(data || []);
-      } catch {
+      } catch (error) {
+        const msg = getErrorMessage(error, "Could not load deals");
+        toast.error(msg);
         setDeals([]);
       } finally {
         setLoading(false);

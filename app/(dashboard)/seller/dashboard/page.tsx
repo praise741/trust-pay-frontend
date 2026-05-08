@@ -12,6 +12,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { merchantService } from "@/services/api";
 import { useAuthStore } from "@/store/auth-store";
+import { getErrorMessage } from "@/lib/error-handler";
 import { toast } from "sonner";
 import type { BackendDeal } from "@/types";
 
@@ -38,7 +39,9 @@ export default function SellerDashboardPage() {
       try {
         const { data } = await merchantService.dashboard();
         setStats(data);
-      } catch {
+      } catch (error) {
+        const msg = getErrorMessage(error, "Could not load dashboard");
+        toast.error(msg);
         setStats({
           total_deals: 0,
           active_deals: 0,

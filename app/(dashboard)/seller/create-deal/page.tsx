@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { dealService } from "@/services/api";
+import { getErrorMessage } from "@/lib/error-handler";
 import { toast } from "sonner";
 
 export default function CreateDealPage() {
@@ -47,10 +48,8 @@ export default function CreateDealPage() {
       const linkUrl = `${window.location.origin}/pay/${data.slug}`;
       setCreatedDeal({ slug: data.slug, link_url: linkUrl, item_description: data.item_description, amount: data.amount });
       toast.success("Deal created successfully!");
-    } catch (error: unknown) {
-      const msg = (error as { response?: { data?: { item_description?: string[]; error?: string } } })?.response?.data?.item_description?.[0]
-        || (error as { response?: { data?: { error?: string } } })?.response?.data?.error
-        || "Failed to create deal";
+    } catch (error) {
+      const msg = getErrorMessage(error, "Failed to create deal");
       toast.error(msg);
     } finally {
       setLoading(false);

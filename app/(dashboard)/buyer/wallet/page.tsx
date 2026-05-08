@@ -7,6 +7,8 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DEAL_STATUS_CONFIG } from "@/constants";
 import { buyerService } from "@/services/api";
+import { getErrorMessage } from "@/lib/error-handler";
+import { toast } from "sonner";
 import { formatCurrency, formatDateTime, cn } from "@/lib/utils";
 import Link from "next/link";
 import type { BackendDeal } from "@/types";
@@ -20,7 +22,9 @@ export default function BuyerWalletPage() {
       try {
         const { data } = await buyerService.deals();
         setDeals(data || []);
-      } catch {
+      } catch (error) {
+        const msg = getErrorMessage(error, "Could not load deals");
+        toast.error(msg);
         setDeals([]);
       } finally {
         setLoading(false);

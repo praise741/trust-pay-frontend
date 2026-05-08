@@ -12,6 +12,7 @@ import { DEAL_STATUS_CONFIG } from "@/constants";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { buyerService } from "@/services/api";
 import { useAppStore } from "@/store/app-store";
+import { getErrorMessage } from "@/lib/error-handler";
 import { toast } from "sonner";
 import type { BackendDeal } from "@/types";
 
@@ -27,8 +28,8 @@ export default function BuyerTransactionsPage() {
         const { data } = await buyerService.deals();
         setDeals(data);
       } catch (error) {
-        console.error("Failed to fetch buyer deals", error);
-        toast.error("Could not load real deals.");
+        const msg = getErrorMessage(error, "Could not load transactions");
+        toast.error(msg);
         setDeals([]);
       } finally {
         setIsLoading(false);

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/store/auth-store";
+import { getErrorMessage } from "@/lib/error-handler";
 import { toast } from "sonner";
 import type { UserRole } from "@/types";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -50,7 +51,7 @@ export default function SignupPage() {
       await register({ ...form, role });
       toast.success("Account created successfully!");
       router.push(`/${role}/dashboard`);
-    } catch { toast.error("Registration failed"); } finally { setIsLoading(false); }
+    } catch (error) { toast.error(getErrorMessage(error, "Registration failed")); } finally { setIsLoading(false); }
   };
 
   const update = (field: string, value: string) => setForm((p) => ({ ...p, [field]: value }));

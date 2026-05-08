@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { DEAL_STATUS_CONFIG } from "@/constants";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import { merchantService, dealService } from "@/services/api";
+import { getErrorMessage } from "@/lib/error-handler";
 import Link from "next/link";
 import { toast } from "sonner";
 import type { BackendDeal } from "@/types";
@@ -25,8 +26,8 @@ export default function SellerDealDetailPage({ params }: { params: Promise<{ id:
       try {
         const { data } = await merchantService.dealDetail(slug);
         setDeal(data);
-      } catch {
-        toast.error("Could not load deal details");
+      } catch (error) {
+        toast.error(getErrorMessage(error, "Could not load deal details"));
       } finally {
         setLoading(false);
       }
@@ -40,9 +41,8 @@ export default function SellerDealDetailPage({ params }: { params: Promise<{ id:
       const { data } = await dealService.ship(slug);
       setDeal(data);
       toast.success("Deal marked as shipped!");
-    } catch (error: unknown) {
-      const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || "Failed to mark as shipped";
-      toast.error(msg);
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to mark as shipped"));
     } finally {
       setActionLoading(null);
     }
@@ -58,9 +58,8 @@ export default function SellerDealDetailPage({ params }: { params: Promise<{ id:
         toast.success("Dispute opened successfully");
         setDeal((prev) => prev ? { ...prev, status: "DISPUTED" } : prev);
       })
-      .catch((error: unknown) => {
-        const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || "Failed to open dispute";
-        toast.error(msg);
+      .catch((error) => {
+        toast.error(getErrorMessage(error, "Failed to open dispute"));
       })
       .finally(() => setActionLoading(null));
   };

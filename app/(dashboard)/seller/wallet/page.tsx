@@ -10,6 +10,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { formatCurrency, formatDateTime, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { merchantService } from "@/services/api";
+import { getErrorMessage } from "@/lib/error-handler";
 import type { BackendDeal } from "@/types";
 
 export default function SellerWalletPage() {
@@ -29,8 +30,8 @@ export default function SellerWalletPage() {
         setBalance(parseFloat(dashRes.data.total_revenue || "0"));
         setTransactions(txRes.data);
       } catch (error) {
-        console.error("Failed to fetch wallet data", error);
-        toast.error("Could not load real wallet data.");
+        const msg = getErrorMessage(error, "Could not load wallet data");
+        toast.error(msg);
         setBalance(0);
         setTransactions([]);
       } finally {

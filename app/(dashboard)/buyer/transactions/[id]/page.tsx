@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { DEAL_STATUS_CONFIG } from "@/constants";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils";
 import { dealService } from "@/services/api";
+import { getErrorMessage } from "@/lib/error-handler";
 import Link from "next/link";
 import { toast } from "sonner";
 import type { BackendDeal } from "@/types";
@@ -59,8 +60,8 @@ export default function BuyerDealDetailPage({ params }: { params: Promise<{ id: 
       try {
         const { data } = await dealService.get(slug);
         setDeal(data);
-      } catch {
-        toast.error("Could not load deal details");
+      } catch (error) {
+        toast.error(getErrorMessage(error, "Could not load deal details"));
       } finally {
         setLoading(false);
       }
@@ -74,9 +75,8 @@ export default function BuyerDealDetailPage({ params }: { params: Promise<{ id: 
       const { data } = await dealService.confirm(slug);
       setDeal(data);
       toast.success("Delivery confirmed! Funds released to seller.");
-    } catch (error: unknown) {
-      const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || "Failed to confirm delivery";
-      toast.error(msg);
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to confirm delivery"));
     } finally {
       setActionLoading(null);
     }
@@ -92,9 +92,8 @@ export default function BuyerDealDetailPage({ params }: { params: Promise<{ id: 
         toast.success("Dispute opened successfully");
         setDeal((prev) => prev ? { ...prev, status: "DISPUTED" } : prev);
       })
-      .catch((error: unknown) => {
-        const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || "Failed to open dispute";
-        toast.error(msg);
+      .catch((error) => {
+        toast.error(getErrorMessage(error, "Failed to open dispute"));
       })
       .finally(() => setActionLoading(null));
   };
