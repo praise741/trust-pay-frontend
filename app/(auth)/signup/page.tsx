@@ -74,8 +74,8 @@ export default function SignupPage() {
     setIsLoading(true);
     try {
       await register({ ...form, role });
-      toast.success("Account created! Please verify your email.");
-      router.push("/verify-email");
+      toast.success("Account created successfully!");
+      router.push(`/${role}/dashboard`);
     } catch { toast.error("Registration failed"); } finally { setIsLoading(false); }
   };
 

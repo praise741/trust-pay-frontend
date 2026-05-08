@@ -15,17 +15,18 @@ interface AuthState {
   isLoading: boolean;
   role: UserRole | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: { firstName: string; lastName: string; email: string; password: string; role: UserRole }) => Promise<void>;
+  register: (data: { username: string; email: string; password: string; phone: string; role: UserRole }) => Promise<void>;
   logout: () => void;
   setUser: (user: User) => void;
   setRole: (role: UserRole) => void;
   setLoading: (loading: boolean) => void;
   adminBypass: (role: UserRole) => void;
+  googleLogin: (token: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       refreshToken: null,
@@ -83,9 +84,8 @@ export const useAuthStore = create<AuthState>()(
             phone: data.phone,
             is_merchant: data.role === "seller",
           });
-          // We do not set the token or authenticate here because the user must verify their email
-          // Or wait, if backend returns access token, we can set it. But we should not fallback to mock.
-          set({ isLoading: false });
+          // Auto-login after registration
+          await get().login(data.username, data.password);
         } catch (error) {
           set({ isLoading: false });
           throw error;
