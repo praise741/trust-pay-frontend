@@ -28,7 +28,9 @@ export function getErrorMessage(error: unknown, fallback = "An unexpected error 
   const { status, data } = axiosError.response;
 
   if (status === 401) {
-    return "Session expired. Please log in again.";
+    const d = data as ApiError;
+    if (d && d.detail) return String(d.detail);
+    return "Invalid credentials or session expired. Please try again.";
   }
 
   if (status === 403) {
