@@ -19,18 +19,11 @@ api.interceptors.request.use(
                           config.url?.includes("/api/auth/register") || 
                           config.url?.includes("/api/auth/google");
     
-    if (!isAuthEndpoint && typeof window !== "undefined") {
-      // Read token from zustand persisted store
-      try {
-        const stored = localStorage.getItem("trustpay-auth");
-        if (stored) {
-          const { state } = JSON.parse(stored);
-          if (state?.token) {
-            config.headers.Authorization = `Bearer ${state.token}`;
-          }
-        }
-      } catch {
-        // ignore parse errors
+    if (!isAuthEndpoint) {
+      // Read token directly from the Zustand store's state
+      const token = useAuthStore.getState().token;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;

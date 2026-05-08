@@ -16,7 +16,7 @@ interface AuthState {
   role: UserRole | null;
   login: (email: string, password: string) => Promise<void>;
   register: (data: { username: string; email: string; password: string; phone: string; role: UserRole }) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   setUser: (user: User) => void;
   setRole: (role: UserRole) => void;
   setLoading: (loading: boolean) => void;
@@ -129,7 +129,19 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      logout: () => set({ user: null, token: null, refreshToken: null, isAuthenticated: false, role: null }),
+      logout: async () => {
+        try {
+          await authService.logout();
+        } catch (error) {
+          console.error("Logout failed:", error);
+        } finally {
+          set({ user: null, token: null, refreshToken: null, isAuthenticated: false, role: null });
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("trustpay-auth");
+            window.location.href = "/login";
+          }
+        }
+      },
       setUser: (user) => set({ user }),
       setRole: (role) => set({ role }),
       setLoading: (isLoading) => set({ isLoading }),

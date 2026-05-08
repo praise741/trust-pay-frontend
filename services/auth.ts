@@ -14,6 +14,9 @@ export const authService = {
   googleLogin: (token: string, userType?: string) =>
     api.post(API_ENDPOINTS.auth.google, { token, user_type: userType }),
 
+  logout: () =>
+    api.post(API_ENDPOINTS.auth.logout),
+
   verifyEmail: () =>
     api.get(API_ENDPOINTS.auth.verifyEmail),
 };

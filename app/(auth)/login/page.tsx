@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/store/auth-store";
 import { getErrorMessage } from "@/lib/error-handler";
 import { toast } from "sonner";
+import type { UserRole } from "@/types";
 
 // Declare google global type
 declare global {
@@ -41,6 +42,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [googleRole, setGoogleRole] = useState<UserRole>("buyer");
   const { login, googleLogin } = useAuthStore();
   const router = useRouter();
 
@@ -78,7 +80,7 @@ export default function LoginPage() {
   const handleGoogleCallback = async (response: { credential: string }) => {
     setIsLoading(true);
     try {
-      await googleLogin(response.credential);
+      await googleLogin(response.credential, googleRole);
       toast.success("Welcome back!");
       const state = useAuthStore.getState();
       router.push(`/${state.role}/dashboard`);
@@ -140,6 +142,14 @@ export default function LoginPage() {
       <div className="relative">
         <Separator />
         <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">or continue with</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-xl">
+        {(["buyer", "seller"] as UserRole[]).map((r) => (
+          <button key={r} onClick={() => setGoogleRole(r)} type="button" className={`py-2 text-sm font-medium rounded-lg transition-all ${googleRole === r ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+            {r === "buyer" ? "Buyer" : "Seller"}
+          </button>
+        ))}
       </div>
 
       <div id="googleSignInButton" className="w-full flex justify-center"></div>
