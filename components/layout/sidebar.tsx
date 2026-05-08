@@ -16,7 +16,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import type { NavItem } from "@/types";
 
 function getIcon(iconName: string) {
-  const IconComp = (Icons as Record<string, React.ComponentType<{ className?: string }>>)[iconName];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const IconComp = (Icons as any)[iconName];
   return IconComp || Icons.Circle;
 }
 
