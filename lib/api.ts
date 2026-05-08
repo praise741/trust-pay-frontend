@@ -14,7 +14,12 @@ export const api = axios.create({
 // Request interceptor - attach JWT access token
 api.interceptors.request.use(
   (config) => {
-    if (typeof window !== "undefined") {
+    // Skip adding token for auth endpoints (login, register, google)
+    const isAuthEndpoint = config.url?.includes("/api/auth/login") || 
+                          config.url?.includes("/api/auth/register") || 
+                          config.url?.includes("/api/auth/google");
+    
+    if (!isAuthEndpoint && typeof window !== "undefined") {
       // Read token from zustand persisted store
       try {
         const stored = localStorage.getItem("trustpay-auth");
