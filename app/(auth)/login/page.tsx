@@ -25,7 +25,8 @@ export default function LoginPage() {
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
       try {
-        await googleLogin(tokenResponse.access_token);
+        const googleIdToken = (tokenResponse as unknown as Record<string, string>).credential || tokenResponse.access_token;
+        await googleLogin(googleIdToken);
         toast.success("Welcome back!");
         const state = useAuthStore.getState();
         router.push(`/${state.role}/dashboard`);

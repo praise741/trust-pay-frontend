@@ -62,8 +62,9 @@ export const BUYER_NAV_ITEMS: NavItem[] = [
 export const SELLER_NAV_ITEMS: NavItem[] = [
   { title: "Dashboard", href: "/seller/dashboard", icon: "LayoutDashboard" },
   { title: "Create Deal", href: "/seller/create-deal", icon: "PlusCircle" },
+  { title: "Payment Links", href: "/seller/links", icon: "Link2" },
   { title: "Transactions", href: "/seller/transactions", icon: "ArrowLeftRight" },
-  { title: "Messages", href: "/seller/messages", icon: "MessageCircle", badge: 4 },
+  { title: "Messages", href: "/seller/messages", icon: "MessageCircle", badge: 0 },
   { title: "Shipments", href: "/seller/shipments", icon: "Package" },
   { title: "Customers", href: "/seller/customers", icon: "Users" },
   { title: "Analytics", href: "/seller/analytics", icon: "BarChart3" },
