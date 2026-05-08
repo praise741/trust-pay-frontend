@@ -38,7 +38,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           className="mb-8 flex flex-col items-center"
         >
           <Link href="/" className="flex items-center gap-2.5 mb-2">
-            <Image src="/logo.png" alt="TrustPay" width={40} height={40} className="rounded-xl shadow-lg" />
+            <Image src="/logo.jpg" alt="TrustPay" width={40} height={40} className="rounded-xl shadow-lg" style={{ width: "auto", height: "auto" }} />
             <span className="text-xl font-bold tracking-tight">TrustPay</span>
           </Link>
           <p className="text-sm text-muted-foreground">Secure escrow for social commerce</p>

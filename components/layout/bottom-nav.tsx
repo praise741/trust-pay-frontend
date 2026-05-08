@@ -3,15 +3,15 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { LayoutDashboard, ArrowLeftRight, Wallet, Bell, User } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, MessageCircle, Wallet, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 
 const TABS = [
   { icon: LayoutDashboard, label: "Home", path: "dashboard" },
-  { icon: ArrowLeftRight, label: "Transactions", path: "transactions" },
+  { icon: ArrowLeftRight, label: "Deals", path: "transactions" },
+  { icon: MessageCircle, label: "Chat", path: "messages" },
   { icon: Wallet, label: "Wallet", path: "wallet" },
-  { icon: Bell, label: "Alerts", path: "notifications" },
   { icon: User, label: "Profile", path: "profile" },
 ];
 
@@ -22,7 +22,7 @@ export function BottomNav() {
   return (
     <div className="fixed bottom-0 inset-x-0 z-50 lg:hidden">
       <div className="mx-3 mb-3">
-        <nav className="glass-strong rounded-2xl shadow-2xl px-2 py-2 flex items-center justify-around">
+        <nav className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/50 shadow-2xl px-1 py-1.5 flex items-center justify-around">
           {TABS.map((tab) => {
             const href = `/${role}/${tab.path}`;
             const isActive = pathname.includes(tab.path);

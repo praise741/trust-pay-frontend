@@ -31,7 +31,7 @@ export default function AboutPage() {
       <nav className="sticky top-0 z-50 glass-strong border-b border-border/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <Image src="/logo.png" alt="TrustPay" width={32} height={32} className="rounded-xl" />
+            <Image src="/logo.jpg" alt="TrustPay" width={32} height={32} className="rounded-xl" style={{ width: "auto", height: "auto" }} />
             <span className="text-lg font-bold">TrustPay</span>
           </Link>
           <div className="flex items-center gap-3"><ThemeToggle /><Link href="/login"><Button variant="ghost" size="sm">Sign In</Button></Link><Link href="/signup"><Button size="sm">Get Started</Button></Link></div>

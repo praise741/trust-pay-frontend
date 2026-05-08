@@ -75,7 +75,7 @@ export default function HomePage() {
         <div className={`max-w-7xl mx-auto px-4 sm:px-6 ${scrolled ? "mx-4 sm:mx-6 lg:mx-auto" : ""}`}>
           <div className={`flex items-center justify-between h-14 px-5 rounded-2xl transition-all duration-500 ${scrolled ? "glass-strong shadow-xl" : "bg-transparent"}`}>
             <Link href="/" className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="TrustPay" width={32} height={32} className="rounded-xl shadow-lg" />
+              <Image src="/logo.jpg" alt="TrustPay" width={32} height={32} className="rounded-xl shadow-lg" style={{ width: "auto", height: "auto" }} />
               <span className="text-lg font-bold tracking-tight">TrustPay</span>
             </Link>
             <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
@@ -263,7 +263,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center gap-2 mb-4"><Image src="/logo.png" alt="TrustPay" width={32} height={32} className="rounded-lg" /><span className="font-bold text-lg">TrustPay</span></div>
+              <div className="flex items-center gap-2 mb-4"><Image src="/logo.jpg" alt="TrustPay" width={32} height={32} className="rounded-lg" style={{ width: "auto", height: "auto" }} /><span className="font-bold text-lg">TrustPay</span></div>
               <p className="text-sm text-muted-foreground">Trust infrastructure for African social commerce.</p>
             </div>
             <div>
