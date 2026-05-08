@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://trust-pay-backend-v78l.onrender.com/";
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://trust-pay-backend-v78l.onrender.com/").replace(/\/+$/, "");
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -47,7 +47,13 @@ api.interceptors.response.use(
         if (stored) {
           const { state } = JSON.parse(stored);
           if (state?.refreshToken) {
-            const { data } = await axios.post(`${API_BASE_URL}/api/auth/refresh/`, { refresh: state.refreshToken });
+            // Use a fresh axios instance without interceptors to avoid infinite loops
+            const refreshClient = axios.create({
+              baseURL: API_BASE_URL,
+              timeout: 10000,
+              headers: { "Content-Type": "application/json" },
+            });
+            const { data } = await refreshClient.post("/api/auth/refresh/", { refresh: state.refreshToken });
             // Update stored token
             const newState = { ...state, token: data.access };
             localStorage.setItem("trustpay-auth", JSON.stringify({ state: newState }));

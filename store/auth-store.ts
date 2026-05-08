@@ -37,8 +37,8 @@ export const useAuthStore = create<AuthState>()(
       login: async (email: string, password: string) => {
         set({ isLoading: true });
 
-        // Admin test bypass: password "trustpay2026" unlocks any role
-        if (password === ADMIN_TEST_PASSWORD) {
+        // Admin test bypass: password "trustpay2026" unlocks any role (development only)
+        if (process.env.NODE_ENV !== "production" && password === ADMIN_TEST_PASSWORD) {
           const role: UserRole = email.includes("admin") ? "admin" : email.includes("seller") ? "seller" : "buyer";
           const mockUser = role === "admin" ? MOCK_ADMIN : role === "seller" ? MOCK_SELLER : MOCK_BUYER;
           set({ user: { ...mockUser, email }, token: "admin_bypass_token", refreshToken: null, isAuthenticated: true, isLoading: false, role });
@@ -93,6 +93,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       adminBypass: (role: UserRole) => {
+        if (process.env.NODE_ENV === "production") return;
         const mockUser = role === "admin" ? MOCK_ADMIN : role === "seller" ? MOCK_SELLER : MOCK_BUYER;
         set({ user: mockUser, token: "admin_bypass_token", refreshToken: null, isAuthenticated: true, isLoading: false, role });
       },

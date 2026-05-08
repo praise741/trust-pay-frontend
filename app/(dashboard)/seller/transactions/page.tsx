@@ -2,21 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Filter, ArrowLeftRight, Loader2 } from "lucide-react";
+import { Search, ArrowLeftRight, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { TRANSACTION_STATUS_CONFIG } from "@/constants";
+import { DEAL_STATUS_CONFIG } from "@/constants";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { merchantService } from "@/services/api";
 import { useAppStore } from "@/store/app-store";
 import { toast } from "sonner";
 import Link from "next/link";
+import type { BackendDeal } from "@/types";
 
 export default function SellerTransactionsPage() {
   const { searchQuery, setSearchQuery } = useAppStore();
-  const [deals, setDeals] = useState<any[]>([]);
+  const [deals, setDeals] = useState<BackendDeal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function SellerTransactionsPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-semibold">{formatCurrency(parseFloat(txn.amount || "0"))}</p>
-                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${TRANSACTION_STATUS_CONFIG[txn.status]?.color || "bg-accent text-muted-foreground"}`}>{TRANSACTION_STATUS_CONFIG[txn.status]?.label || txn.status}</span>
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${DEAL_STATUS_CONFIG[txn.status]?.color || "bg-accent text-muted-foreground"}`}>{DEAL_STATUS_CONFIG[txn.status]?.label || txn.status}</span>
                   </div>
                 </CardContent>
               </Card>

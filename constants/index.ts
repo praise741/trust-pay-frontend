@@ -357,6 +357,19 @@ export const MOCK_PLATFORM_STATS: ChartDataPoint[] = [
 ];
 
 // ============================================
+// Backend Deal Status Mapping
+// Maps backend statuses (PENDING_PAYMENT, PAID, SHIPPED, etc.) to frontend display config
+// ============================================
+export const DEAL_STATUS_CONFIG: Record<string, { label: string; color: string }> = {
+  PENDING_PAYMENT: { label: "Awaiting Payment", color: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300" },
+  PAID: { label: "Paid", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
+  SHIPPED: { label: "Shipped", color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+  COMPLETED: { label: "Completed", color: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300" },
+  DISPUTED: { label: "Disputed", color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
+  REFUNDED: { label: "Refunded", color: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300" },
+};
+
+// ============================================
 // Transaction Status Config
 // ============================================
 export const TRANSACTION_STATUS_CONFIG: Record<string, { label: string; color: string }> = {

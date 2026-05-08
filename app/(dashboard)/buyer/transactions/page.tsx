@@ -7,18 +7,18 @@ import { Search, Filter, ArrowLeftRight, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TRANSACTION_STATUS_CONFIG } from "@/constants";
+import { DEAL_STATUS_CONFIG } from "@/constants";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { buyerService } from "@/services/api";
 import { useAppStore } from "@/store/app-store";
 import { toast } from "sonner";
+import type { BackendDeal } from "@/types";
 
 export default function BuyerTransactionsPage() {
   const { searchQuery, setSearchQuery } = useAppStore();
   const [statusFilter, setStatusFilter] = useState("all");
-  const [deals, setDeals] = useState<any[]>([]);
+  const [deals, setDeals] = useState<BackendDeal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function BuyerTransactionsPage() {
     const desc = t.item_description || "";
     const seller = t.seller || "";
     const matchSearch = desc.toLowerCase().includes(searchQuery.toLowerCase()) || seller.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchStatus = statusFilter === "all" || t.status === statusFilter || (statusFilter === "in_transit" && t.status === "SHIPPED") || (statusFilter === "payment_secured" && t.status === "PAID") || (statusFilter === "funds_released" && t.status === "COMPLETED");
+    const matchStatus = statusFilter === "all" || t.status === statusFilter;
     return matchSearch && matchStatus;
   });
 
@@ -63,10 +63,12 @@ export default function BuyerTransactionsPage() {
           <SelectTrigger className="w-full sm:w-48"><Filter className="h-4 w-4 mr-2" /><SelectValue placeholder="Filter status" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="in_transit">In Transit / Shipped</SelectItem>
-            <SelectItem value="payment_secured">Paid</SelectItem>
-            <SelectItem value="funds_released">Completed</SelectItem>
-            <SelectItem value="disputed">Disputed</SelectItem>
+            <SelectItem value="PENDING_PAYMENT">Awaiting Payment</SelectItem>
+            <SelectItem value="PAID">Paid</SelectItem>
+            <SelectItem value="SHIPPED">Shipped</SelectItem>
+            <SelectItem value="COMPLETED">Completed</SelectItem>
+            <SelectItem value="DISPUTED">Disputed</SelectItem>
+            <SelectItem value="REFUNDED">Refunded</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -91,8 +93,8 @@ export default function BuyerTransactionsPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold">{formatCurrency(parseFloat(txn.amount || "0"))}</p>
-                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold mt-1 ${TRANSACTION_STATUS_CONFIG[txn.status]?.color || "bg-accent text-muted-foreground"}`}>
-                        {TRANSACTION_STATUS_CONFIG[txn.status]?.label || txn.status}
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold mt-1 ${DEAL_STATUS_CONFIG[txn.status]?.color || "bg-accent text-muted-foreground"}`}>
+                        {DEAL_STATUS_CONFIG[txn.status]?.label || txn.status}
                       </span>
                     </div>
                   </div>

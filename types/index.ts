@@ -267,3 +267,27 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+// ============================================
+// Backend Deal (from API)
+// ============================================
+export interface BackendDeal {
+  id: string;
+  slug: string;
+  seller: string;
+  buyer_email: string;
+  buyer_phone: string;
+  item_description: string;
+  amount: string;
+  delivery_days: number;
+  status: string;
+  va_account_number: string;
+  va_bank_name: string;
+  va_reference: string;
+  created_at: string;
+  paid_at: string | null;
+  shipped_at: string | null;
+  auto_release_at: string | null;
+  completed_at: string | null;
+  trust_fee_percent: string;
+}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Wallet, ArrowUpRight, ArrowDownLeft, Plus, Building2, Loader2 } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Plus, Building2, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,11 @@ import { useAuthStore } from "@/store/auth-store";
 import { formatCurrency, formatDateTime, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { merchantService } from "@/services/api";
+import type { BackendDeal } from "@/types";
 
 export default function SellerWalletPage() {
   const [balance, setBalance] = useState<number>(0);
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<Array<{ id: string; deal: string; tx_type: string; status: string; amount: string; payaza_ref: string; created_at: string }>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuthStore();
 
@@ -77,7 +78,7 @@ export default function SellerWalletPage() {
       </div>
       <Card><CardHeader><CardTitle className="text-base">Payout History</CardTitle></CardHeader>
         <CardContent><div className="space-y-1">
-          {transactions.map((tx, i) => {
+          {transactions.length > 0 ? transactions.map((tx) => {
             const isCredit = tx.tx_type === "COLLECTION";
             return (
               <div key={tx.id} className="flex items-center justify-between py-3 border-b last:border-0 border-border">
@@ -90,7 +91,9 @@ export default function SellerWalletPage() {
                 <p className={cn("font-semibold text-sm", isCredit ? "text-green-600" : "text-red-600")}>{isCredit ? "+" : "-"}{formatCurrency(parseFloat(tx.amount))}</p>
               </div>
             );
-          })}
+          }) : (
+            <div className="py-8 text-center text-muted-foreground text-sm">No payout history</div>
+          )}
         </div></CardContent>
       </Card>
     </div>
