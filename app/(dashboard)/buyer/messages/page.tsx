@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { MessageCircle, Search } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ChatBox, type Message } from "@/components/shared/chat-box";
 import { cn, getInitials } from "@/lib/utils";
@@ -31,6 +31,7 @@ export default function BuyerMessagesPage() {
   const [selectedConvo, setSelectedConvo] = useState(CONVERSATIONS[0]);
   const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES);
   const [search, setSearch] = useState("");
+  const [showChat, setShowChat] = useState(false);
 
   const handleSend = (content: string) => {
     setMessages((prev) => [...prev, {
@@ -39,35 +40,48 @@ export default function BuyerMessagesPage() {
     }]);
   };
 
+  const selectConvo = (convo: typeof CONVERSATIONS[0]) => {
+    setSelectedConvo(convo);
+    setShowChat(true);
+  };
+
   const filtered = CONVERSATIONS.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="space-y-6">
+    <div className="h-[calc(100vh-130px)] flex flex-col">
       <PageHeader title="Messages" description="Chat with sellers and support" />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-220px)] min-h-[500px]">
-        {/* Conversation List */}
-        <Card className="lg:col-span-1 overflow-hidden">
-          <div className="p-3 border-b border-border">
-            <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search conversations..." className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
+      <div className="flex-1 mt-4 flex gap-4 min-h-0 overflow-hidden">
+        {/* Conversation List — hidden on mobile when chat is open */}
+        <Card className={cn("w-full lg:w-80 lg:shrink-0 flex flex-col overflow-hidden", showChat && "hidden lg:flex")}>
+          <div className="p-3 border-b border-border shrink-0">
+            <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search..." className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
           </div>
-          <div className="overflow-y-auto h-full">
+          <div className="flex-1 overflow-y-auto">
             {filtered.map((convo) => (
-              <button key={convo.id} onClick={() => setSelectedConvo(convo)} className={cn("w-full text-left p-3 flex items-start gap-3 hover:bg-accent/50 transition-colors border-b border-border/50", selectedConvo.id === convo.id && "bg-accent/50")}>
-                <Avatar className="h-10 w-10 shrink-0"><AvatarFallback className="text-xs">{getInitials(convo.name)}</AvatarFallback></Avatar>
+              <button key={convo.id} onClick={() => selectConvo(convo)} className={cn("w-full text-left p-3 flex items-start gap-3 hover:bg-accent/50 transition-colors border-b border-border/50", selectedConvo.id === convo.id && "bg-primary/5 border-l-2 border-l-primary")}>
+                <Avatar className="h-10 w-10 shrink-0"><AvatarFallback className="text-xs bg-primary/10 text-primary">{getInitials(convo.name)}</AvatarFallback></Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between"><p className="text-sm font-semibold truncate">{convo.name}</p><span className="text-[10px] text-muted-foreground shrink-0">{convo.time}</span></div>
                   <p className="text-xs text-muted-foreground truncate">{convo.lastMessage}</p>
-                  <p className="text-[10px] text-primary/70 truncate">{convo.deal}</p>
+                  <p className="text-[10px] text-primary/70 truncate mt-0.5">{convo.deal}</p>
                 </div>
-                {convo.unread > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">{convo.unread}</span>}
+                {convo.unread > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1 mt-1">{convo.unread}</span>}
               </button>
             ))}
           </div>
         </Card>
 
-        {/* Chat */}
-        <div className="lg:col-span-2">
-          <ChatBox messages={messages} currentUserId="buyer" recipientName={selectedConvo.name} dealTitle={selectedConvo.deal} onSend={handleSend} className="h-full" />
+        {/* Chat — full width on mobile, flex on desktop */}
+        <div className={cn("flex-1 min-w-0 flex flex-col", !showChat && "hidden lg:flex")}>
+          {/* Mobile back button */}
+          <div className="lg:hidden mb-2">
+            <Button variant="ghost" size="sm" onClick={() => setShowChat(false)} className="gap-1">
+              <ArrowLeft className="h-4 w-4" /> Back
+            </Button>
+          </div>
+          <div className="flex-1 min-h-0">
+            <ChatBox messages={messages} currentUserId="buyer" recipientName={selectedConvo.name} dealTitle={selectedConvo.deal} onSend={handleSend} className="h-full" />
+          </div>
         </div>
       </div>
     </div>

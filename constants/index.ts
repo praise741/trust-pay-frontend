@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
     create: "/api/deals/",
     detail: (slug: string) => `/api/deals/${slug}/`,
     pay: (slug: string) => `/api/deals/${slug}/pay/`,
+    mockPay: (slug: string) => `/api/deals/${slug}/mock-pay/`,
     ship: (slug: string) => `/api/deals/${slug}/ship/`,
     confirm: (slug: string) => `/api/deals/${slug}/confirm/`,
     dispute: (slug: string) => `/api/deals/${slug}/dispute/`,

@@ -8,6 +8,8 @@ interface AppState {
   setSidebarOpen: (open: boolean) => void;
   notificationCount: number;
   setNotificationCount: (count: number) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
 export const useAppStore = create<AppState>()((set) => ({
@@ -18,4 +20,6 @@ export const useAppStore = create<AppState>()((set) => ({
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   notificationCount: 2,
   setNotificationCount: (count) => set({ notificationCount: count }),
+  searchQuery: "",
+  setSearchQuery: (query) => set({ searchQuery: query }),
 }));

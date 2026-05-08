@@ -15,6 +15,9 @@ export const dealService = {
   pay: (slug: string) =>
     api.post(API_ENDPOINTS.deals.pay(slug)),
 
+  mockPay: (slug: string) =>
+    api.post(API_ENDPOINTS.deals.mockPay(slug)),
+
   ship: (slug: string) =>
     api.post(API_ENDPOINTS.deals.ship(slug)),
 

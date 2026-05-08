@@ -1,16 +1,55 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Wallet, ArrowUpRight, ArrowDownLeft, Plus, Building2, Copy } from "lucide-react";
+import { Wallet, ArrowUpRight, ArrowDownLeft, Plus, Building2, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MOCK_WALLET } from "@/constants";
 import { formatCurrency, formatDateTime, cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { merchantService } from "@/services/api";
 
 export default function SellerWalletPage() {
-  const w = MOCK_WALLET;
+  const [balance, setBalance] = useState<number>(0);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const w = MOCK_WALLET; // Fallback for payout account details since it's not in the API doc
+
+  useEffect(() => {
+    const fetchWalletData = async () => {
+      try {
+        const [dashRes, txRes] = await Promise.all([
+          merchantService.dashboard(),
+          merchantService.transactions()
+        ]);
+        
+        setBalance(parseFloat(dashRes.data.total_revenue || "0"));
+        setTransactions(txRes.data);
+      } catch (error) {
+        console.error("Failed to fetch wallet data", error);
+        toast.error("Could not load real wallet data. Using mock data fallback.");
+        setBalance(w.balance);
+        setTransactions(w.transactions.map(t => ({
+          id: t.id,
+          tx_type: t.type === "credit" ? "COLLECTION" : "PAYOUT",
+          amount: t.amount,
+          created_at: t.createdAt,
+          status: "SUCCESS"
+        })));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchWalletData();
+  }, [w]);
+
+  if (isLoading) {
+    return <div className="flex h-[400px] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary/50" /></div>;
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader title="Wallet" description="Manage your earnings"><Button><Plus className="h-4 w-4 mr-1" /> Withdraw</Button></PageHeader>
@@ -19,7 +58,7 @@ export default function SellerWalletPage() {
           <Card className="overflow-hidden">
             <div className="gradient-primary p-6 text-white">
               <p className="text-sm opacity-80 mb-1">Available Balance</p>
-              <p className="text-3xl font-bold">{formatCurrency(w.balance)}</p>
+              <p className="text-3xl font-bold">{formatCurrency(balance)}</p>
               <div className="flex gap-3 mt-4">
                 <Button size="sm" variant="secondary" className="bg-white/20 text-white border-0 hover:bg-white/30"><ArrowUpRight className="h-4 w-4 mr-1" /> Withdraw</Button>
               </div>
@@ -38,17 +77,20 @@ export default function SellerWalletPage() {
       </div>
       <Card><CardHeader><CardTitle className="text-base">Payout History</CardTitle></CardHeader>
         <CardContent><div className="space-y-1">
-          {w.transactions.map((tx, i) => (
-            <div key={tx.id} className="flex items-center justify-between py-3 border-b last:border-0 border-border">
-              <div className="flex items-center gap-3">
-                <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center", tx.type === "credit" ? "bg-green-100 dark:bg-green-900/30 text-green-600" : "bg-red-100 dark:bg-red-900/30 text-red-600")}>
-                  {tx.type === "credit" ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+          {transactions.map((tx, i) => {
+            const isCredit = tx.tx_type === "COLLECTION";
+            return (
+              <div key={tx.id} className="flex items-center justify-between py-3 border-b last:border-0 border-border">
+                <div className="flex items-center gap-3">
+                  <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center", isCredit ? "bg-green-100 dark:bg-green-900/30 text-green-600" : "bg-red-100 dark:bg-red-900/30 text-red-600")}>
+                    {isCredit ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+                  </div>
+                  <div><p className="text-sm font-medium">{tx.tx_type}</p><p className="text-xs text-muted-foreground">{formatDateTime(tx.created_at)}</p></div>
                 </div>
-                <div><p className="text-sm font-medium">{tx.description}</p><p className="text-xs text-muted-foreground">{formatDateTime(tx.createdAt)}</p></div>
+                <p className={cn("font-semibold text-sm", isCredit ? "text-green-600" : "text-red-600")}>{isCredit ? "+" : "-"}{formatCurrency(parseFloat(tx.amount))}</p>
               </div>
-              <p className={cn("font-semibold text-sm", tx.type === "credit" ? "text-green-600" : "text-red-600")}>{tx.type === "credit" ? "+" : "-"}{formatCurrency(tx.amount)}</p>
-            </div>
-          ))}
+            );
+          })}
         </div></CardContent>
       </Card>
     </div>

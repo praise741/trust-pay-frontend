@@ -111,11 +111,23 @@ export default function HomePage() {
               </motion.div>
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight leading-[1.1]">
                 Secure Every Transaction on{" "}
-                <span className="bg-gradient-to-r from-primary to-sage bg-clip-text text-transparent">Social Commerce</span>
+                <span className="relative inline-block">
+                  <span className="bg-gradient-to-r from-primary to-sage bg-clip-text text-transparent">Social Commerce</span>
+                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <motion.path d="M2 8.5C50 2 100 2 150 6C200 10 250 4 298 7" stroke="url(#underline-grad)" strokeWidth="3" strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.6, ease: "easeInOut" }} />
+                    <defs><linearGradient id="underline-grad" x1="0" y1="0" x2="300" y2="0" gradientUnits="userSpaceOnUse"><stop stopColor="hsl(var(--primary))" /><stop offset="1" stopColor="#87A987" /></linearGradient></defs>
+                  </svg>
+                </span>
               </motion.h1>
-              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-lg text-muted-foreground mt-6 max-w-lg">
-                TrustPay protects buyers and sellers on Instagram, WhatsApp, TikTok, and X with secure escrow, delivery tracking, and instant payouts. Only 1.5–2% trust fee.
-              </motion.p>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="mt-6 max-w-lg space-y-3">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent"><Instagram className="h-3.5 w-3.5 text-pink-500" /> Instagram</span>
+                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent"><MessageCircle className="h-3.5 w-3.5 text-green-500" /> WhatsApp</span>
+                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent"><span className="text-xs font-bold">🎵</span> TikTok</span>
+                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent"><span className="font-bold text-xs">𝕏</span></span>
+                </div>
+                <p className="text-base text-muted-foreground">Escrow protection, delivery tracking, and instant payouts. <span className="text-primary font-semibold">Only 1.5–2% trust fee.</span></p>
+              </motion.div>
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="flex flex-col sm:flex-row items-start gap-4 mt-8">
                 <Link href="/signup"><Button size="xl" className="gap-2">Start Selling Securely <ArrowRight className="h-4 w-4" /></Button></Link>
                 <Link href="/login"><Button size="xl" variant="outline">I&apos;m a Buyer</Button></Link>
@@ -385,27 +397,6 @@ function HeroEscrowVisual() {
         </div>
       </div>
 
-      {/* Floating notification */}
-      <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -right-4 glass-strong rounded-xl px-4 py-2.5 shadow-xl border border-green-500/20">
-        <div className="flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-green-500" />
-          <div><p className="text-xs font-semibold">Delivery Confirmed</p><p className="text-[10px] text-muted-foreground">2 min ago</p></div>
-        </div>
-      </motion.div>
-
-      {/* Platform badge */}
-      <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute -bottom-3 -left-4 glass-strong rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
-        <Instagram className="h-4 w-4 text-pink-500" />
-        <MessageCircle className="h-4 w-4 text-green-500" />
-        <span className="text-sm font-bold">𝕏</span>
-        <span className="text-[10px] text-muted-foreground">Social Commerce</span>
-      </motion.div>
-
-      {/* Transaction counter */}
-      <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }} className="absolute top-6 -left-6 glass-strong rounded-xl px-3 py-2 shadow-xl">
-        <p className="text-[10px] text-muted-foreground">Secured today</p>
-        <p className="text-sm font-bold text-primary">₦14.2M</p>
-      </motion.div>
     </div>
   );
 }

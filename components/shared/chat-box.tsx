@@ -45,9 +45,9 @@ export function ChatBox({ messages, currentUserId, recipientName, onSend, dealTi
   };
 
   return (
-    <div className={cn("flex flex-col h-[500px] border border-border rounded-2xl overflow-hidden bg-card", className)}>
+    <div className={cn("flex flex-col border border-border rounded-2xl overflow-hidden bg-card", className)}>
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-accent/30">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-accent/30 shrink-0">
         <Avatar className="h-8 w-8"><AvatarFallback className="text-xs">{getInitials(recipientName)}</AvatarFallback></Avatar>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold truncate">{recipientName}</p>
@@ -81,7 +81,7 @@ export function ChatBox({ messages, currentUserId, recipientName, onSend, dealTi
       </div>
 
       {/* Input */}
-      <div className="border-t border-border p-3">
+      <div className="border-t border-border p-3 shrink-0 bg-card">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="shrink-0 rounded-xl h-9 w-9"><Paperclip className="h-4 w-4" /></Button>
           <Input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} placeholder="Type a message..." className="flex-1 rounded-xl" />

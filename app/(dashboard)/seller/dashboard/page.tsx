@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { DollarSign, ArrowLeftRight, Package, TrendingUp, Users, Star } from "lucide-react";
+import { DollarSign, ArrowLeftRight, Package, TrendingUp, Users, Star, Loader2 } from "lucide-react";
 import { KPICard } from "@/components/shared/kpi-card";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,22 +11,61 @@ import { MOCK_TRANSACTIONS, MOCK_REVENUE_CHART, TRANSACTION_STATUS_CONFIG } from
 import { formatCurrency, formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { merchantService } from "@/services/api";
+import { useAuthStore } from "@/store/auth-store";
+import { toast } from "sonner";
 
 const stagger = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } };
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
 export default function SellerDashboardPage() {
+  const { user } = useAuthStore();
+  const [stats, setStats] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const { data } = await merchantService.dashboard();
+        setStats(data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard", error);
+        toast.error("Could not load real dashboard stats. Using mock data.");
+        setStats({
+          total_revenue: 890000,
+          active_deals: 12,
+          pending_revenue: 47000,
+          recent_deals: MOCK_TRANSACTIONS.slice(0, 3).map(t => ({
+            id: t.id,
+            slug: t.id,
+            item_description: t.title,
+            buyer_email: t.buyerName,
+            amount: t.amount,
+            status: t.status
+          }))
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchDashboard();
+  }, []);
+
+  if (isLoading) {
+    return <div className="flex h-[400px] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary/50" /></div>;
+  }
+
   return (
     <div className="space-y-6">
-      <PageHeader title="Seller Dashboard" description="Welcome back, Chukwuma 💼">
+      <PageHeader title="Seller Dashboard" description={`Welcome back, ${user?.firstName || 'Seller'} 💼`}>
         <Link href="/seller/create-deal"><Button>+ Create Deal</Button></Link>
       </PageHeader>
 
       <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <motion.div variants={item}><KPICard title="Total Revenue" value={formatCurrency(890000)} change="+23%" changeType="positive" icon={DollarSign} /></motion.div>
-        <motion.div variants={item}><KPICard title="Active Deals" value="12" change="+3" changeType="positive" icon={ArrowLeftRight} delay={0.1} /></motion.div>
-        <motion.div variants={item}><KPICard title="Pending Releases" value={formatCurrency(47000)} change="3 deals" changeType="neutral" icon={Package} delay={0.2} /></motion.div>
-        <motion.div variants={item}><KPICard title="Trust Score" value="96/100" change="+2 pts" changeType="positive" icon={Star} delay={0.3} /></motion.div>
+        <motion.div variants={item}><KPICard title="Total Revenue" value={formatCurrency(parseFloat(stats?.total_revenue || "0"))} change="+23%" changeType="positive" icon={DollarSign} /></motion.div>
+        <motion.div variants={item}><KPICard title="Active Deals" value={stats?.active_deals || "0"} change="+3" changeType="positive" icon={ArrowLeftRight} delay={0.1} /></motion.div>
+        <motion.div variants={item}><KPICard title="Pending Releases" value={formatCurrency(parseFloat(stats?.pending_revenue || "0"))} change="3 deals" changeType="neutral" icon={Package} delay={0.2} /></motion.div>
+        <motion.div variants={item}><KPICard title="Trust Score" value={`${user?.trustScore || 90}/100`} change="+2 pts" changeType="positive" icon={Star} delay={0.3} /></motion.div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -58,18 +98,21 @@ export default function SellerDashboardPage() {
           <CardHeader className="flex-row items-center justify-between"><CardTitle className="text-base">Recent Orders</CardTitle><Link href="/seller/transactions"><Button variant="ghost" size="sm">View all</Button></Link></CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {MOCK_TRANSACTIONS.slice(0, 3).map((txn) => (
+              {(stats?.recent_deals || []).map((txn: any) => (
                 <div key={txn.id} className="flex items-center justify-between py-2">
                   <div>
-                    <p className="text-sm font-medium">{txn.title}</p>
-                    <p className="text-xs text-muted-foreground">{txn.buyerName}</p>
+                    <p className="text-sm font-medium">{txn.item_description}</p>
+                    <p className="text-xs text-muted-foreground">{txn.buyer_email || "Guest Buyer"}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold">{formatCurrency(txn.amount)}</p>
-                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${TRANSACTION_STATUS_CONFIG[txn.status]?.color}`}>{TRANSACTION_STATUS_CONFIG[txn.status]?.label}</span>
+                    <p className="text-sm font-semibold">{formatCurrency(parseFloat(txn.amount || "0"))}</p>
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${TRANSACTION_STATUS_CONFIG[txn.status]?.color || "bg-accent text-muted-foreground"}`}>{TRANSACTION_STATUS_CONFIG[txn.status]?.label || txn.status}</span>
                   </div>
                 </div>
               ))}
+              {stats?.recent_deals?.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No recent orders found.</p>
+              )}
             </div>
           </CardContent>
         </Card>
