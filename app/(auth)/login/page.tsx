@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -43,6 +43,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [googleRole, setGoogleRole] = useState<UserRole>("buyer");
+  
+  // Use a ref to avoid stale closure in the Google callback
+  const currentRoleRef = useRef<UserRole>("buyer");
+  useEffect(() => {
+    currentRoleRef.current = googleRole;
+  }, [googleRole]);
+
   const { login, googleLogin } = useAuthStore();
   const router = useRouter();
 
@@ -80,7 +87,8 @@ export default function LoginPage() {
   const handleGoogleCallback = async (response: { credential: string }) => {
     setIsLoading(true);
     try {
-      await googleLogin(response.credential, googleRole);
+      // Use the current value from ref instead of the stale closure variable
+      await googleLogin(response.credential, currentRoleRef.current);
       toast.success("Welcome back!");
       const state = useAuthStore.getState();
       router.push(`/${state.role}/dashboard`);

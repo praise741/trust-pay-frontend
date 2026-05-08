@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>()(
         // Try real API first
         try {
           const { data } = await authService.login(email, password);
-          const role: UserRole = data.user?.is_merchant ? "seller" : data.user?.is_staff ? "admin" : "buyer";
+          const role: UserRole = data.user?.is_staff ? "admin" : data.user?.is_merchant ? "seller" : "buyer";
           const user: User = {
             id: data.user?.id || "",
             firstName: data.user?.first_name || data.user?.username || email.split("@")[0],
@@ -103,7 +103,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const { data } = await authService.googleLogin(googleToken, userType);
-          const role: UserRole = data.user?.is_merchant ? "seller" : data.user?.is_staff ? "admin" : "buyer";
+          const role: UserRole = data.user?.is_staff ? "admin" : data.user?.is_merchant ? "seller" : "buyer";
           const user: User = {
             id: data.user?.id || "",
             firstName: data.user?.first_name || data.user?.username || "",
