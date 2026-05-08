@@ -54,6 +54,8 @@ export interface User {
   lastLogin: string;
   totalTransactions: number;
   successRate: number;
+  bankName?: string;
+  bankAccountNumber?: string;
 }
 
 // ============================================

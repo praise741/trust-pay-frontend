@@ -66,7 +66,7 @@ export default function SellerMessagesPage() {
                 <Avatar className="h-9 w-9 shrink-0"><AvatarFallback className="text-xs bg-primary/10 text-primary">{getInitials(selectedConvo.name)}</AvatarFallback></Avatar>
                 <div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{selectedConvo.name}</p><p className="text-xs text-muted-foreground truncate">Deal: {selectedConvo.deal}</p></div>
               </div>
-              <ChatBox messages={messages} currentUserId="seller" onSend={handleSend} />
+              <ChatBox messages={messages} currentUserId="seller" recipientName={selectedConvo.name} dealTitle={selectedConvo.deal} onSend={handleSend} />
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">Select a conversation to start chatting</div>
