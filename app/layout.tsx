@@ -25,14 +25,20 @@ export const metadata: Metadata = {
   keywords: ["escrow", "fintech", "Nigeria", "social commerce", "secure payments", "TrustPay"],
 };
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
-          <Toaster position="top-right" richColors closeButton theme="system" />
-        </ThemeProvider>
+        <GoogleOAuthProvider clientId={googleClientId}>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+            {children}
+            <Toaster position="top-right" richColors closeButton theme="system" />
+          </ThemeProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

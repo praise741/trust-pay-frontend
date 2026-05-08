@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
+import { useGoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -19,8 +20,25 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuthStore();
+  const { login, googleLogin } = useAuthStore();
   const router = useRouter();
+
+  const handleGoogleAuth = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsLoading(true);
+      try {
+        await googleLogin(tokenResponse.access_token);
+        toast.success("Welcome back!");
+        const state = useAuthStore.getState();
+        router.push(`/${state.role}/dashboard`);
+      } catch {
+        toast.error("Google login failed. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    onError: () => toast.error("Google login cancelled or failed."),
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,8 +47,8 @@ export default function LoginPage() {
     try {
       await login(email, password);
       toast.success("Welcome back!");
-      const role = email.includes("admin") ? "admin" : email.includes("seller") ? "seller" : "buyer";
-      router.push(`/${role}/dashboard`);
+      const state = useAuthStore.getState();
+      router.push(`/${state.role}/dashboard`);
     } catch { toast.error("Invalid credentials"); } finally { setIsLoading(false); }
   };
 
@@ -80,15 +98,15 @@ export default function LoginPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        {[
-          { name: "Google", icon: "G" },
-          { name: "Apple", icon: "" },
-          { name: "X", icon: "𝕏" },
-        ].map((p) => (
-          <Button key={p.name} variant="outline" className="h-11" onClick={() => toast.info(`${p.name} login coming soon`)}>
-            <span className="text-base font-bold">{p.icon}</span>
-          </Button>
-        ))}
+        <Button variant="outline" className="h-11" onClick={() => handleGoogleAuth()}>
+          <span className="text-base font-bold">G</span>
+        </Button>
+        <Button variant="outline" className="h-11" onClick={() => toast.info(`Apple login coming soon`)}>
+          <span className="text-base font-bold"></span>
+        </Button>
+        <Button variant="outline" className="h-11" onClick={() => toast.info(`X login coming soon`)}>
+          <span className="text-base font-bold">𝕏</span>
+        </Button>
       </div>
 
       <p className="text-center text-sm text-muted-foreground">

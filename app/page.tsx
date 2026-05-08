@@ -45,20 +45,70 @@ const CAROUSEL_ITEMS = [
   { title: "< 24hr Payouts", subtitle: "Average time from delivery to seller payout", icon: Zap },
 ];
 
+const TypewriterStats = ({ items }: { items: typeof CAROUSEL_ITEMS }) => {
+  const [index, setIndex] = useState(0);
+  const [subIndex, setSubIndex] = useState(0);
+  const [reverse, setReverse] = useState(false);
+  const [blink, setBlink] = useState(true);
+
+  useEffect(() => {
+    const timeout2 = setInterval(() => setBlink((prev) => !prev), 500);
+    return () => clearInterval(timeout2);
+  }, []);
+
+  useEffect(() => {
+    if (index >= items.length) {
+      setIndex(0);
+      return;
+    }
+    const currentItem = items[index];
+    const textToType = `${currentItem.title} — ${currentItem.subtitle}`;
+
+    if (subIndex === textToType.length + 1 && !reverse) {
+      const timeout = setTimeout(() => {
+        setReverse(true);
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+
+    if (subIndex === 0 && reverse) {
+      setReverse(false);
+      setIndex((prev) => prev + 1);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setSubIndex((prev) => prev + (reverse ? -1 : 1));
+    }, reverse ? 30 : 60);
+
+    return () => clearTimeout(timeout);
+  }, [subIndex, index, reverse, items]);
+
+  const currentItem = items[index % items.length];
+  const fullText = `${currentItem.title} — ${currentItem.subtitle}`;
+  const displayText = fullText.substring(0, subIndex);
+
+  return (
+    <div className="flex flex-col md:flex-row items-center justify-center gap-4 py-8 min-h-[120px]">
+      <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+        <currentItem.icon className="h-6 w-6 text-primary" />
+      </div>
+      <p className="font-mono text-lg md:text-xl font-semibold text-center md:text-left h-14 md:h-auto overflow-hidden text-primary">
+        {displayText}
+        <span className={`${blink ? 'opacity-100' : 'opacity-0'} transition-opacity`}>|</span>
+      </p>
+    </div>
+  );
+};
+
 export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [currentCarousel, setCurrentCarousel] = useState(0);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentCarousel((p) => (p + 1) % CAROUSEL_ITEMS.length), 3000);
-    return () => clearInterval(timer);
   }, []);
 
   const nextTestimonial = () => setCurrentTestimonial((p) => (p + 1) % TESTIMONIALS.length);
@@ -147,21 +197,9 @@ export default function HomePage() {
       </section>
 
       {/* ========== STATS CAROUSEL ========== */}
-      <section className="py-6 border-y border-border bg-accent/20">
+      <section className="py-2 border-y border-border bg-accent/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {CAROUSEL_ITEMS.map((item, i) => (
-              <motion.div key={item.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="flex items-center gap-3 py-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <item.icon className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-bold text-lg">{item.title}</p>
-                  <p className="text-xs text-muted-foreground">{item.subtitle}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <TypewriterStats items={CAROUSEL_ITEMS} />
         </div>
       </section>
 

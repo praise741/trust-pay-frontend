@@ -79,14 +79,15 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const res = await authService.register({
-            username: data.email.split("@")[0],
+            username: data.username,
             email: data.email,
             password: data.password,
+            phone: data.phone,
             is_merchant: data.role === "seller",
           });
           const mockUser = data.role === "seller" ? MOCK_SELLER : MOCK_BUYER;
           set({
-            user: { ...mockUser, ...data },
+            user: { ...mockUser, ...data, id: res.data?.id || mockUser.id },
             token: res.data?.access || "mock_token_xyz",
             refreshToken: res.data?.refresh || null,
             isAuthenticated: true,
@@ -100,10 +101,39 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // Quick role switch for testing — no login required
       adminBypass: (role: UserRole) => {
         const mockUser = role === "admin" ? MOCK_ADMIN : role === "seller" ? MOCK_SELLER : MOCK_BUYER;
         set({ user: mockUser, token: "admin_bypass_token", refreshToken: null, isAuthenticated: true, isLoading: false, role });
+      },
+
+      googleLogin: async (googleToken: string) => {
+        set({ isLoading: true });
+        try {
+          const { data } = await authService.googleLogin(googleToken);
+          const role: UserRole = data.user?.is_merchant ? "seller" : data.user?.is_staff ? "admin" : "buyer";
+          const user: User = {
+            id: data.user?.id || "",
+            firstName: data.user?.first_name || data.user?.username || "",
+            lastName: data.user?.last_name || "",
+            email: data.user?.email || "",
+            phone: data.user?.phone || "",
+            role,
+            avatar: data.user?.avatar || "",
+            trustScore: data.user?.trust_score || 85,
+            verificationStatus: "verified",
+            kycStatus: data.user?.kyc_status || "pending",
+            isEmailVerified: true,
+            isMfaEnabled: false,
+            createdAt: data.user?.date_joined || new Date().toISOString(),
+            lastLogin: new Date().toISOString(),
+            totalTransactions: data.user?.total_transactions || 0,
+            successRate: data.user?.success_rate || 100,
+          };
+          set({ user, token: data.access, refreshToken: data.refresh, isAuthenticated: true, isLoading: false, role });
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
       },
 
       logout: () => set({ user: null, token: null, refreshToken: null, isAuthenticated: false, role: null }),
