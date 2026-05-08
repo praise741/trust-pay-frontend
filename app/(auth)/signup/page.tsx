@@ -80,7 +80,7 @@ export default function SignupPage() {
   const handleGoogleCallback = async (response: { credential: string }) => {
     setIsLoading(true);
     try {
-      await googleLogin(response.credential);
+      await googleLogin(response.credential, role);
       toast.success("Account created via Google!");
       const state = useAuthStore.getState();
       router.push(`/${state.role}/dashboard`);

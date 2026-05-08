@@ -11,8 +11,8 @@ export const authService = {
   refresh: (refreshToken: string) =>
     api.post(API_ENDPOINTS.auth.refresh, { refresh: refreshToken }),
 
-  googleLogin: (token: string) =>
-    api.post(API_ENDPOINTS.auth.google, { token }),
+  googleLogin: (token: string, userType?: string) =>
+    api.post(API_ENDPOINTS.auth.google, { token, user_type: userType }),
 
   verifyEmail: () =>
     api.get(API_ENDPOINTS.auth.verifyEmail),

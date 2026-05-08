@@ -21,7 +21,7 @@ interface AuthState {
   setRole: (role: UserRole) => void;
   setLoading: (loading: boolean) => void;
   adminBypass: (role: UserRole) => void;
-  googleLogin: (token: string) => Promise<void>;
+  googleLogin: (token: string, userType?: UserRole) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -99,10 +99,10 @@ export const useAuthStore = create<AuthState>()(
         set({ user: mockUser, token: "admin_bypass_token", refreshToken: null, isAuthenticated: true, isLoading: false, role });
       },
 
-      googleLogin: async (googleToken: string) => {
+      googleLogin: async (googleToken: string, userType?: UserRole) => {
         set({ isLoading: true });
         try {
-          const { data } = await authService.googleLogin(googleToken);
+          const { data } = await authService.googleLogin(googleToken, userType);
           const role: UserRole = data.user?.is_merchant ? "seller" : data.user?.is_staff ? "admin" : "buyer";
           const user: User = {
             id: data.user?.id || "",
