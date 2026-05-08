@@ -14,12 +14,14 @@ export const api = axios.create({
 // Request interceptor - attach JWT access token
 api.interceptors.request.use(
   (config) => {
-    // Skip adding token for auth endpoints (login, register, google)
-    const isAuthEndpoint = config.url?.includes("/api/auth/login") || 
-                          config.url?.includes("/api/auth/register") || 
-                          config.url?.includes("/api/auth/google");
+    // Skip adding token for public endpoints
+    const isPublicEndpoint = 
+      config.url?.includes("/api/auth/") || 
+      config.url?.includes("/api/sellers/") ||
+      // Matches /api/deals/[slug]/ or /api/deals/[slug]/pay/ but NOT /api/deals/ (list)
+      (config.url?.includes("/api/deals/") && config.url.split("/").filter(Boolean).length > 2);
     
-    if (!isAuthEndpoint) {
+    if (!isPublicEndpoint) {
       // Read token directly from the Zustand store's state
       const token = useAuthStore.getState().token;
       if (token) {
