@@ -1,10 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Shield, ArrowRight, CheckCircle, Lock, Truck, ShieldCheck, Star, Smartphone, Globe, Zap, Instagram, MessageCircle } from "lucide-react";
+import { Shield, ArrowRight, CheckCircle, Lock, Truck, ShieldCheck, Star, Smartphone, Globe, Zap, ChevronLeft, ChevronRight, Quote, Mail, MapPin, Phone, Instagram, MessageCircle, Users, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 const stagger = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
@@ -26,74 +29,197 @@ const STEPS = [
   { step: "04", title: "Confirm & Release", description: "Buyer confirms delivery and funds are released to seller" },
 ];
 
+const TESTIMONIALS = [
+  { name: "Chidinma Obi", role: "Fashion Seller, Lagos", text: "TrustPay changed my Instagram business completely. I used to lose ₦200k+ monthly to fake buyers. Now every transaction is secured and I get paid the moment delivery is confirmed.", rating: 5 },
+  { name: "Emeka Uche", role: "Buyer, Abuja", text: "I bought a laptop from a TikTok seller I'd never met. TrustPay held the money until I received and tested it. Saved me from what could have been a ₦450k scam.", rating: 5 },
+  { name: "Aisha Mohammed", role: "Electronics Seller, Kano", text: "The 1.5% trust fee is nothing compared to what I was losing. My customers trust me more now because I use TrustPay. Revenue is up 40% in 3 months.", rating: 5 },
+  { name: "Tunde Bakare", role: "Buyer, Port Harcourt", text: "Bought ankara fabric from a WhatsApp seller in Abeokuta. Got exactly what was advertised. The escrow protection gave me confidence to buy from strangers.", rating: 5 },
+  { name: "Folake Adeyemi", role: "Art Dealer, Ibadan", text: "I sell handcrafted pieces worth ₦500k+. TrustPay's dispute resolution and delivery tracking are game changers. My high-value buyers love the security.", rating: 5 },
+];
+
+const CAROUSEL_ITEMS = [
+  { title: "₦2.4B+ Secured", subtitle: "Transaction volume protected through TrustPay escrow", icon: ShieldCheck },
+  { title: "12,000+ Users", subtitle: "Active buyers and sellers across Nigeria", icon: Users },
+  { title: "98.5% Success Rate", subtitle: "Transactions completed without disputes", icon: TrendingUp },
+  { title: "< 24hr Payouts", subtitle: "Average time from delivery to seller payout", icon: Zap },
+];
+
 export default function HomePage() {
+  const [scrolled, setScrolled] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [currentCarousel, setCurrentCarousel] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentCarousel((p) => (p + 1) % CAROUSEL_ITEMS.length), 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextTestimonial = () => setCurrentTestimonial((p) => (p + 1) % TESTIMONIALS.length);
+  const prevTestimonial = () => setCurrentTestimonial((p) => (p - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 glass-strong">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-primary shadow-lg"><Shield className="h-4.5 w-4.5 text-white" /></div>
-            <span className="text-lg font-bold tracking-tight">TrustPay</span>
-          </Link>
-          <div className="hidden sm:flex items-center gap-6 text-sm font-medium text-muted-foreground">
-            <a href="#features" className="hover:text-foreground transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-foreground transition-colors">How it Works</a>
-          </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link href="/login"><Button variant="ghost" size="sm">Sign In</Button></Link>
-            <Link href="/signup"><Button size="sm">Get Started</Button></Link>
+      {/* ========== FLOATING NAVBAR ========== */}
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "py-2" : "py-3"}`}
+      >
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 ${scrolled ? "mx-4 sm:mx-6 lg:mx-auto" : ""}`}>
+          <div className={`flex items-center justify-between h-14 px-5 rounded-2xl transition-all duration-500 ${scrolled ? "glass-strong shadow-xl" : "bg-transparent"}`}>
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl gradient-primary shadow-lg">
+                <Shield className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-lg font-bold tracking-tight">TrustPay</span>
+            </Link>
+            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+              <a href="#features" className="hover:text-foreground transition-colors">Features</a>
+              <a href="#how-it-works" className="hover:text-foreground transition-colors">How it Works</a>
+              <a href="#testimonials" className="hover:text-foreground transition-colors">Testimonials</a>
+              <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
+              <Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link>
+            </div>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Link href="/login"><Button variant="ghost" size="sm" className="hidden sm:flex">Sign In</Button></Link>
+              <Link href="/signup"><Button size="sm">Get Started</Button></Link>
+            </div>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
+      {/* ========== HERO ========== */}
+      <section className="relative overflow-hidden pt-28 pb-20">
         <div className="pointer-events-none absolute inset-0 gradient-mesh" />
         <div className="pointer-events-none absolute top-20 left-1/4 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
         <div className="pointer-events-none absolute bottom-20 right-1/4 h-64 w-64 rounded-full bg-sage/10 blur-3xl" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-20 pb-32 text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              <Shield className="h-3.5 w-3.5" /> Trust Infrastructure for African Commerce
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left — Text */}
+            <div>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+                  <Shield className="h-3.5 w-3.5" /> Trust Infrastructure for African Commerce
+                </div>
+              </motion.div>
+              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight leading-[1.1]">
+                Secure Every Transaction on{" "}
+                <span className="bg-gradient-to-r from-primary to-sage bg-clip-text text-transparent">Social Commerce</span>
+              </motion.h1>
+              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-lg text-muted-foreground mt-6 max-w-lg">
+                TrustPay protects buyers and sellers on Instagram, WhatsApp, TikTok, and X with secure escrow, delivery tracking, and instant payouts. Only 1.5–2% trust fee.
+              </motion.p>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="flex flex-col sm:flex-row items-start gap-4 mt-8">
+                <Link href="/signup"><Button size="xl" className="gap-2">Start Selling Securely <ArrowRight className="h-4 w-4" /></Button></Link>
+                <Link href="/login"><Button size="xl" variant="outline">I&apos;m a Buyer</Button></Link>
+              </motion.div>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="flex items-center gap-5 mt-8 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-success" /> No setup fees</span>
+                <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-success" /> 256-bit encryption</span>
+              </motion.div>
             </div>
-          </motion.div>
 
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight max-w-4xl mx-auto leading-tight">
-            Secure Every Transaction on{" "}
-            <span className="bg-gradient-to-r from-primary to-sage bg-clip-text text-transparent">Social Commerce</span>
-          </motion.h1>
+            {/* Right — Animated Escrow Flow Visual */}
+            <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="hidden lg:block">
+              <div className="relative">
+                {/* Main card */}
+                <div className="glass-strong rounded-3xl p-8 shadow-2xl border border-primary/10">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-3 w-3 rounded-full bg-red-400" />
+                    <div className="h-3 w-3 rounded-full bg-amber-400" />
+                    <div className="h-3 w-3 rounded-full bg-green-400" />
+                    <span className="ml-2 text-xs text-muted-foreground font-mono">trustpay.ng/escrow</span>
+                  </div>
 
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-lg text-muted-foreground max-w-2xl mx-auto mt-6">
-            TrustPay protects buyers and sellers on Instagram, WhatsApp, TikTok, and X with secure escrow, delivery tracking, and instant payouts.
-          </motion.p>
+                  {/* Escrow visualization */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-accent/50">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500 font-bold text-sm">AO</div>
+                        <div><p className="text-sm font-semibold">Adaeze O.</p><p className="text-[10px] text-muted-foreground">Buyer · Lagos</p></div>
+                      </div>
+                      <div className="text-right"><p className="text-xs text-muted-foreground">Sent</p><p className="text-sm font-bold text-primary">₦85,000</p></div>
+                    </div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-            <Link href="/signup"><Button size="xl" className="gap-2">Start Selling Securely <ArrowRight className="h-4 w-4" /></Button></Link>
-            <Link href="/login"><Button size="xl" variant="outline">I&apos;m a Buyer</Button></Link>
-          </motion.div>
+                    {/* Animated escrow lock */}
+                    <div className="flex flex-col items-center py-3">
+                      <motion.div animate={{ scale: [1, 1.08, 1], boxShadow: ["0 0 0 0 rgba(59,130,246,0)", "0 0 0 12px rgba(59,130,246,0.1)", "0 0 0 0 rgba(59,130,246,0)"] }} transition={{ duration: 2.5, repeat: Infinity }} className="h-14 w-14 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
+                        <Lock className="h-6 w-6 text-white" />
+                      </motion.div>
+                      <p className="text-xs font-semibold mt-2 text-primary">Escrow Vault</p>
+                      <p className="text-[10px] text-muted-foreground">Funds secured · 1.5% trust fee</p>
+                    </div>
 
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="flex items-center justify-center gap-6 mt-10 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1"><CheckCircle className="h-4 w-4 text-success" /> No setup fees</span>
-            <span className="flex items-center gap-1"><CheckCircle className="h-4 w-4 text-success" /> 256-bit encryption</span>
-            <span className="flex items-center gap-1"><CheckCircle className="h-4 w-4 text-success" /> PCI DSS compliant</span>
-          </motion.div>
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-accent/50">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500 font-bold text-sm">CE</div>
+                        <div><p className="text-sm font-semibold">Chukwuma E.</p><p className="text-[10px] text-muted-foreground">Seller · Abuja</p></div>
+                      </div>
+                      <div className="text-right"><p className="text-xs text-muted-foreground">Receives</p><p className="text-sm font-bold text-success">₦83,725</p></div>
+                    </div>
+                  </div>
 
-          {/* Platform icons */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="flex items-center justify-center gap-4 mt-8">
-            {[Instagram, MessageCircle].map((Icon, i) => (
-              <div key={i} className="h-10 w-10 rounded-xl bg-accent flex items-center justify-center"><Icon className="h-5 w-5 text-muted-foreground" /></div>
-            ))}
-            <div className="h-10 w-10 rounded-xl bg-accent flex items-center justify-center text-muted-foreground font-bold text-sm">𝕏</div>
-            <div className="h-10 w-10 rounded-xl bg-accent flex items-center justify-center text-muted-foreground font-bold text-xs">TT</div>
-          </motion.div>
+                  {/* Status bar */}
+                  <div className="mt-4 flex items-center gap-2">
+                    {["Payment Secured", "Shipped", "In Transit", "Delivered"].map((s, i) => (
+                      <div key={s} className="flex-1">
+                        <div className={`h-1.5 rounded-full ${i < 3 ? "bg-primary" : "bg-muted"}`} />
+                        <p className={`text-[9px] mt-1 ${i < 3 ? "text-primary font-medium" : "text-muted-foreground"}`}>{s}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Floating notification */}
+                <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -right-4 glass-strong rounded-xl px-4 py-2.5 shadow-xl border border-green-500/20">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <div><p className="text-xs font-semibold">Delivery Confirmed</p><p className="text-[10px] text-muted-foreground">2 min ago</p></div>
+                  </div>
+                </motion.div>
+
+                {/* Platform badges */}
+                <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute -bottom-3 -left-4 glass-strong rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
+                  <Instagram className="h-4 w-4 text-pink-500" />
+                  <MessageCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm font-bold">𝕏</span>
+                  <span className="text-[10px] text-muted-foreground">Social Commerce</span>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="py-24 bg-accent/30">
+      {/* ========== STATS CAROUSEL ========== */}
+      <section className="py-6 border-y border-border bg-accent/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {CAROUSEL_ITEMS.map((item, i) => (
+              <motion.div key={item.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="flex items-center gap-3 py-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <item.icon className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg">{item.title}</p>
+                  <p className="text-xs text-muted-foreground">{item.subtitle}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========== FEATURES ========== */}
+      <section id="features" className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center mb-16">
             <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold">Built for Trust</motion.h2>
@@ -104,7 +230,9 @@ export default function HomePage() {
               <motion.div key={f.title} variants={fadeUp}>
                 <Card className="h-full hover:border-primary/20 transition-all hover:shadow-lg group">
                   <CardContent className="p-6">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors"><f.icon className="h-6 w-6 text-primary" /></div>
+                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                      <f.icon className="h-6 w-6 text-primary" />
+                    </div>
                     <h3 className="font-semibold text-lg mb-2">{f.title}</h3>
                     <p className="text-sm text-muted-foreground">{f.description}</p>
                   </CardContent>
@@ -115,31 +243,74 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How it Works */}
-      <section id="how-it-works" className="py-24">
+      {/* ========== HOW IT WORKS ========== */}
+      <section id="how-it-works" className="py-24 bg-accent/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
             <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold">How TrustPay Works</motion.h2>
-            <motion.p variants={fadeUp} className="text-muted-foreground mt-4">Four simple steps to secure transactions</motion.p>
+            <motion.p variants={fadeUp} className="text-muted-foreground mt-4">Four simple steps to secure transactions. 1.5–2% trust fee per deal.</motion.p>
           </motion.div>
           <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {STEPS.map((s) => (
-              <motion.div key={s.step} variants={fadeUp} className="text-center">
-                <div className="text-4xl font-bold text-primary/20 mb-3">{s.step}</div>
+            {STEPS.map((s, i) => (
+              <motion.div key={s.step} variants={fadeUp} className="relative text-center">
+                <div className="text-5xl font-bold text-primary/10 mb-3">{s.step}</div>
                 <h3 className="font-semibold text-lg mb-2">{s.title}</h3>
                 <p className="text-sm text-muted-foreground">{s.description}</p>
+                {i < 3 && <div className="hidden lg:block absolute top-8 -right-4 text-muted-foreground/30"><ArrowRight className="h-6 w-6" /></div>}
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ========== TESTIMONIALS ========== */}
+      <section id="testimonials" className="py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold">Trusted by Thousands</h2>
+            <p className="text-muted-foreground mt-4">Real stories from real users across Nigeria</p>
+          </div>
+          <div className="relative max-w-3xl mx-auto">
+            <AnimatePresence mode="wait">
+              <motion.div key={currentTestimonial} initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} transition={{ duration: 0.4 }}>
+                <Card className="border-primary/10">
+                  <CardContent className="p-8 sm:p-10">
+                    <Quote className="h-8 w-8 text-primary/20 mb-4" />
+                    <p className="text-lg leading-relaxed mb-6">&ldquo;{TESTIMONIALS[currentTestimonial].text}&rdquo;</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold">{TESTIMONIALS[currentTestimonial].name}</p>
+                        <p className="text-sm text-muted-foreground">{TESTIMONIALS[currentTestimonial].role}</p>
+                      </div>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </AnimatePresence>
+            <div className="flex items-center justify-center gap-3 mt-6">
+              <Button variant="outline" size="icon" onClick={prevTestimonial} className="rounded-full h-9 w-9"><ChevronLeft className="h-4 w-4" /></Button>
+              <div className="flex gap-1.5">
+                {TESTIMONIALS.map((_, i) => (
+                  <button key={i} onClick={() => setCurrentTestimonial(i)} className={`h-2 rounded-full transition-all ${i === currentTestimonial ? "w-6 bg-primary" : "w-2 bg-muted-foreground/30"}`} />
+                ))}
+              </div>
+              <Button variant="outline" size="icon" onClick={nextTestimonial} className="rounded-full h-9 w-9"><ChevronRight className="h-4 w-4" /></Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== CTA ========== */}
       <section className="py-24 bg-accent/30">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to trade with confidence?</h2>
-            <p className="text-muted-foreground mb-8">Join thousands of Nigerians who trust TrustPay for secure social commerce transactions.</p>
+            <p className="text-muted-foreground mb-8">Join thousands of Nigerians who trust TrustPay for secure social commerce transactions. Only 1.5–2% trust fee per transaction.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/signup"><Button size="xl" className="gap-2">Create Free Account <ArrowRight className="h-4 w-4" /></Button></Link>
               <Link href="/login"><Button size="xl" variant="outline">Sign In</Button></Link>
@@ -152,12 +323,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-12">
+      {/* ========== FOOTER ========== */}
+      <footer className="border-t border-border py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2"><div className="h-8 w-8 rounded-lg gradient-primary flex items-center justify-center"><Shield className="h-4 w-4 text-white" /></div><span className="font-bold">TrustPay</span></div>
-            <p className="text-sm text-muted-foreground">© 2026 TrustPay. Trust infrastructure for African social commerce.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4"><div className="h-8 w-8 rounded-lg gradient-primary flex items-center justify-center"><Shield className="h-4 w-4 text-white" /></div><span className="font-bold text-lg">TrustPay</span></div>
+              <p className="text-sm text-muted-foreground">Trust infrastructure for African social commerce.</p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-3">Product</h4>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <a href="#features" className="block hover:text-foreground transition-colors">Features</a>
+                <a href="#how-it-works" className="block hover:text-foreground transition-colors">How it Works</a>
+                <Link href="/about" className="block hover:text-foreground transition-colors">About Us</Link>
+                <Link href="/contact" className="block hover:text-foreground transition-colors">Contact</Link>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-3">Legal</h4>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <a href="#" className="block hover:text-foreground">Privacy Policy</a>
+                <a href="#" className="block hover:text-foreground">Terms of Service</a>
+                <a href="#" className="block hover:text-foreground">Refund Policy</a>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-3">Connect</h4>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p className="flex items-center gap-2"><Mail className="h-3.5 w-3.5" /> support@trustpay.ng</p>
+                <p className="flex items-center gap-2"><Phone className="h-3.5 w-3.5" /> +234 801 TRUST</p>
+                <p className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> Lagos, Nigeria</p>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-border mt-10 pt-6 text-center text-sm text-muted-foreground">
+            © 2026 TrustPay. All rights reserved. 🇳🇬
           </div>
         </div>
       </footer>

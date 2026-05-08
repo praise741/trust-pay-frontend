@@ -42,6 +42,8 @@ export const API_ENDPOINTS = {
 export const BUYER_NAV_ITEMS: NavItem[] = [
   { title: "Dashboard", href: "/buyer/dashboard", icon: "LayoutDashboard" },
   { title: "Transactions", href: "/buyer/transactions", icon: "ArrowLeftRight" },
+  { title: "Payments", href: "/buyer/payments", icon: "CreditCard" },
+  { title: "Messages", href: "/buyer/messages", icon: "MessageCircle", badge: 3 },
   { title: "Delivery", href: "/buyer/delivery", icon: "Truck" },
   { title: "Disputes", href: "/buyer/disputes", icon: "ShieldAlert" },
   { title: "Wallet", href: "/buyer/wallet", icon: "Wallet" },
@@ -54,6 +56,7 @@ export const SELLER_NAV_ITEMS: NavItem[] = [
   { title: "Dashboard", href: "/seller/dashboard", icon: "LayoutDashboard" },
   { title: "Create Deal", href: "/seller/create-deal", icon: "PlusCircle" },
   { title: "Transactions", href: "/seller/transactions", icon: "ArrowLeftRight" },
+  { title: "Messages", href: "/seller/messages", icon: "MessageCircle", badge: 4 },
   { title: "Shipments", href: "/seller/shipments", icon: "Package" },
   { title: "Customers", href: "/seller/customers", icon: "Users" },
   { title: "Analytics", href: "/seller/analytics", icon: "BarChart3" },
