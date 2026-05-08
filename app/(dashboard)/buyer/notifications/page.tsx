@@ -6,7 +6,6 @@ import { Bell, CreditCard, Truck, ShieldAlert, CheckCircle, AlertTriangle, Setti
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MOCK_NOTIFICATIONS } from "@/constants";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Notification } from "@/types";
@@ -16,7 +15,7 @@ const ICONS: Record<string, React.ElementType> = {
 };
 
 export default function BuyerNotificationsPage() {
-  const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const markAsRead = (id: string) => {
     setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, isRead: true } : n));

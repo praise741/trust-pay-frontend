@@ -7,11 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MOCK_SELLER } from "@/constants";
+import { useAuthStore } from "@/store/auth-store";
 import { getInitials } from "@/lib/utils";
 
 export default function SellerProfilePage() {
-  const user = MOCK_SELLER;
+  const { user } = useAuthStore();
+  if (!user) return null;
+
   return (
     <div className="space-y-6">
       <PageHeader title="Profile" description="Your seller profile and trust information" />
@@ -29,7 +31,7 @@ export default function SellerProfilePage() {
           <Card><CardContent className="p-6">
             <h3 className="font-semibold mb-4">Seller Statistics</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {[{ label: "Total Sales", value: "234", icon: ArrowLeftRight },{ label: "Success Rate", value: "99.1%", icon: CheckCircle },{ label: "Active Shipments", value: "5", icon: Package },{ label: "Rating", value: "4.9★", icon: Star }].map((stat, i) => (
+              {[{ label: "Total Sales", value: user.totalTransactions || "0", icon: ArrowLeftRight },{ label: "Success Rate", value: `${user.successRate || 100}%`, icon: CheckCircle },{ label: "Active Shipments", value: "0", icon: Package },{ label: "Rating", value: "5.0★", icon: Star }].map((stat, i) => (
                 <div key={i} className="p-4 rounded-xl bg-accent/50 text-center"><stat.icon className="h-5 w-5 text-primary mx-auto mb-2" /><p className="text-lg font-bold">{stat.value}</p><p className="text-xs text-muted-foreground">{stat.label}</p></div>
               ))}
             </div>

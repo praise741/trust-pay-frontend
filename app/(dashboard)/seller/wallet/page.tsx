@@ -6,7 +6,7 @@ import { Wallet, ArrowUpRight, ArrowDownLeft, Plus, Building2, Loader2 } from "l
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MOCK_WALLET } from "@/constants";
+import { useAuthStore } from "@/store/auth-store";
 import { formatCurrency, formatDateTime, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { merchantService } from "@/services/api";
@@ -15,7 +15,7 @@ export default function SellerWalletPage() {
   const [balance, setBalance] = useState<number>(0);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const w = MOCK_WALLET; // Fallback for payout account details since it's not in the API doc
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const fetchWalletData = async () => {
@@ -29,22 +29,16 @@ export default function SellerWalletPage() {
         setTransactions(txRes.data);
       } catch (error) {
         console.error("Failed to fetch wallet data", error);
-        toast.error("Could not load real wallet data. Using mock data fallback.");
-        setBalance(w.balance);
-        setTransactions(w.transactions.map(t => ({
-          id: t.id,
-          tx_type: t.type === "credit" ? "COLLECTION" : "PAYOUT",
-          amount: t.amount,
-          created_at: t.createdAt,
-          status: "SUCCESS"
-        })));
+        toast.error("Could not load real wallet data.");
+        setBalance(0);
+        setTransactions([]);
       } finally {
         setIsLoading(false);
       }
     };
     
     fetchWalletData();
-  }, [w]);
+  }, []);
 
   if (isLoading) {
     return <div className="flex h-[400px] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary/50" /></div>;
@@ -68,9 +62,15 @@ export default function SellerWalletPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Card><CardHeader><CardTitle className="text-base flex items-center gap-2"><Building2 className="h-4 w-4" /> Payout Account</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <div><p className="text-xs text-muted-foreground">Bank</p><p className="text-sm font-medium">{w.virtualAccount.bankName}</p></div>
-              <div><p className="text-xs text-muted-foreground">Account Number</p><p className="text-sm font-mono font-medium">{w.virtualAccount.accountNumber}</p></div>
-              <div><p className="text-xs text-muted-foreground">Account Name</p><p className="text-sm font-medium">{w.virtualAccount.accountName}</p></div>
+              {user ? (
+                <>
+                  <div><p className="text-xs text-muted-foreground">Bank</p><p className="text-sm font-medium">{user?.bankName || "Not set"}</p></div>
+                  <div><p className="text-xs text-muted-foreground">Account Number</p><p className="text-sm font-mono font-medium">{user?.bankAccountNumber || "Not set"}</p></div>
+                  <div><p className="text-xs text-muted-foreground">Account Name</p><p className="text-sm font-medium">{user?.firstName} {user?.lastName}</p></div>
+                </>
+              ) : (
+                <div className="text-sm text-muted-foreground">No payout account linked.</div>
+              )}
             </CardContent>
           </Card>
         </motion.div>

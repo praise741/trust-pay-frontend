@@ -67,11 +67,9 @@ export const useAuthStore = create<AuthState>()(
             successRate: data.user?.success_rate || 100,
           };
           set({ user, token: data.access, refreshToken: data.refresh, isAuthenticated: true, isLoading: false, role });
-        } catch {
-          // Fallback to mock data if backend is not available
-          const role: UserRole = email.includes("admin") ? "admin" : email.includes("seller") ? "seller" : "buyer";
-          const mockUser = role === "admin" ? MOCK_ADMIN : role === "seller" ? MOCK_SELLER : MOCK_BUYER;
-          set({ user: { ...mockUser, email, role }, token: "mock_token_xyz", refreshToken: null, isAuthenticated: true, isLoading: false, role });
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
         }
       },
 
@@ -85,19 +83,12 @@ export const useAuthStore = create<AuthState>()(
             phone: data.phone,
             is_merchant: data.role === "seller",
           });
-          const mockUser = data.role === "seller" ? MOCK_SELLER : MOCK_BUYER;
-          set({
-            user: { ...mockUser, ...data, id: res.data?.id || mockUser.id },
-            token: res.data?.access || "mock_token_xyz",
-            refreshToken: res.data?.refresh || null,
-            isAuthenticated: true,
-            isLoading: false,
-            role: data.role,
-          });
-        } catch {
-          // Fallback to mock
-          const mockUser = data.role === "seller" ? MOCK_SELLER : MOCK_BUYER;
-          set({ user: { ...mockUser, ...data }, token: "mock_token_xyz", refreshToken: null, isAuthenticated: true, isLoading: false, role: data.role });
+          // We do not set the token or authenticate here because the user must verify their email
+          // Or wait, if backend returns access token, we can set it. But we should not fallback to mock.
+          set({ isLoading: false });
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
         }
       },
 

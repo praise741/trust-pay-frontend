@@ -6,7 +6,6 @@ import { ShieldAlert, Clock, Eye, CheckCircle, XCircle, Loader2 } from "lucide-r
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MOCK_DISPUTES } from "@/constants";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
 import { adminService } from "@/services/api";
@@ -26,21 +25,8 @@ export default function AdminDisputesPage() {
       setDisputes(data);
     } catch (error) {
       console.error("Failed to fetch disputes", error);
-      toast.error("Could not load real disputes. Using mock data.");
-      setDisputes(MOCK_DISPUTES.map(d => ({
-        id: d.id,
-        deal: {
-          id: d.transactionId,
-          slug: d.transactionId,
-          item_description: d.transactionTitle,
-          amount: d.amount,
-          buyer_email: d.raisedByName,
-          seller: d.respondentName
-        },
-        reason: d.reason,
-        status: d.status,
-        created_at: d.createdAt
-      })));
+      toast.error("Could not load real disputes.");
+      setDisputes([]);
     } finally {
       setIsLoading(false);
     }

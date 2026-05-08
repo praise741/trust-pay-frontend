@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MOCK_TRANSACTIONS, TRANSACTION_STATUS_CONFIG } from "@/constants";
+import { TRANSACTION_STATUS_CONFIG } from "@/constants";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { buyerService } from "@/services/api";
 import { useAppStore } from "@/store/app-store";
@@ -28,16 +28,8 @@ export default function BuyerTransactionsPage() {
         setDeals(data);
       } catch (error) {
         console.error("Failed to fetch buyer deals", error);
-        toast.error("Could not load real deals. Using mock data fallback.");
-        setDeals(MOCK_TRANSACTIONS.map(t => ({
-          id: t.id,
-          slug: t.id,
-          item_description: t.title,
-          seller: t.sellerName,
-          amount: t.amount,
-          status: t.status,
-          created_at: t.createdAt
-        })));
+        toast.error("Could not load real deals.");
+        setDeals([]);
       } finally {
         setIsLoading(false);
       }

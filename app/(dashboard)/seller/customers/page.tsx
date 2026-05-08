@@ -9,11 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getInitials } from "@/lib/utils";
 
-const MOCK_CUSTOMERS = [
-  { id: "1", name: "Adaeze Okonkwo", email: "adaeze@example.com", transactions: 5, totalSpent: 87000, trustScore: 92 },
-  { id: "2", name: "Tunde Bakare", email: "tunde@example.com", transactions: 3, totalSpent: 45000, trustScore: 88 },
-  { id: "3", name: "Fatima Bello", email: "fatima@example.com", transactions: 8, totalSpent: 156000, trustScore: 95 },
-];
+const MOCK_CUSTOMERS: any[] = [];
 
 export default function SellerCustomersPage() {
   return (
@@ -21,7 +17,7 @@ export default function SellerCustomersPage() {
       <PageHeader title="Customers" description="Manage your customer relationships" />
       <div className="relative max-w-md"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search customers..." className="pl-10" /></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {MOCK_CUSTOMERS.map((customer, i) => (
+        {MOCK_CUSTOMERS.length > 0 ? MOCK_CUSTOMERS.map((customer, i) => (
           <motion.div key={customer.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
             <Card className="hover:border-primary/20 transition-all">
               <CardContent className="p-5 text-center">
@@ -36,7 +32,13 @@ export default function SellerCustomersPage() {
               </CardContent>
             </Card>
           </motion.div>
-        ))}
+        )) : (
+          <div className="col-span-full py-20 text-center">
+            <Users className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+            <p className="text-lg font-medium">No customers found</p>
+            <p className="text-sm text-muted-foreground mt-1">You don't have any customers yet.</p>
+          </div>
+        )}
       </div>
     </div>
   );
