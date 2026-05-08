@@ -85,7 +85,9 @@ export const useAuthStore = create<AuthState>()(
             is_merchant: data.role === "seller",
           });
           // Auto-login after registration to get the correct role from backend
-          await get().login(data.username, data.password);
+          // Use username if provided, otherwise fallback to email for the login call
+          const loginId = data.username || data.email;
+          await get().login(loginId, data.password);
           // Role is now set correctly by login function
         } catch (error) {
           set({ isLoading: false });
