@@ -54,14 +54,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           {children}
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-6 text-center text-xs text-muted-foreground"
-        >
-          Protected by 256-bit encryption · PCI DSS Compliant
-        </motion.p>
+
       </div>
     </div>
   );
